@@ -53,6 +53,7 @@ private:
 
 	InputClass* m_Input;
 	GraphicsClass* m_Graphics;
+	GameClass* m_Game;
 };
 
 

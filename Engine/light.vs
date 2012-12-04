@@ -13,12 +13,6 @@ cbuffer MatrixBuffer
 	matrix projectionMatrix;
 };
 
-cbuffer VariableBuffer
-{
-    float delta;
-	float3 variablePadding;
-};
-
 cbuffer CameraBuffer
 {
     float3 cameraPosition;
