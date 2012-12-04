@@ -177,13 +177,6 @@ bool GraphicsClass::Frame()
 	{
 		rotation -= 360.0f;
 	}
-
-	// Update the delta variable each frame. (keep this between 0 and 1)
-	delta += 0.001;
-	if(delta >1.0f)
-	{
-		delta -=1.0f;
-	}
 	
 	// Render the graphics scene.
 	result = Render(rotation, delta);
@@ -198,10 +191,82 @@ bool GraphicsClass::Frame()
 
 bool GraphicsClass::Render(float rotation, float deltavalue)
 {
-	D3DXMATRIX rotationMatrix, translationMatrix, scaleMatrix, worldMatrix, viewMatrix, projectionMatrix;
 	bool result;
 
+	result = beginRender();
 
+	result = result && modelRender(*m_Model, Coord(1,1,1), Coord(0,0,0), Coord(0,rotation,0));
+
+	result = result && modelRender(*m_Model_2, Coord(0.5,0.5,0.5), Coord(2,0,0), Coord(rotation,-rotation,0));
+
+	result = result && endRender();
+
+	return result;
+
+	//D3DXMATRIX rotationMatrix, translationMatrix, scaleMatrix, worldMatrix, viewMatrix, projectionMatrix;
+	//bool result;
+
+
+	//// Clear the buffers to begin the scene.
+	//m_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
+
+	//// Generate the view matrix based on the camera's position.
+	//m_Camera->Render();
+
+	//// Get the world, view, and projection matrices from the camera and d3d objects.
+	//m_Camera->GetViewMatrix(viewMatrix);
+	//m_D3D->GetWorldMatrix(worldMatrix);
+	//translationMatrix = worldMatrix;
+	//rotationMatrix = worldMatrix;
+	//m_D3D->GetProjectionMatrix(projectionMatrix);
+
+	//// Rotate the world matrix by the rotation value so that the model will spin.
+	//D3DXMatrixIdentity(&worldMatrix);
+	//D3DXMatrixRotationY(&worldMatrix, rotation);
+
+	//// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
+	//m_Model->Render(m_D3D->GetDeviceContext());
+
+	//// Render the model using the light shader.
+	//result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, 
+	//							    m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), m_Camera->GetPosition(), 
+	//								m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), deltavalue, m_Model->GetTexture());
+	//if(!result)
+	//{
+	//	return false;
+	//}
+
+	//// Rotate the world matrix by the rotation value so that the model will spin.
+	//D3DXMatrixIdentity(&worldMatrix);
+	//D3DXMatrixIdentity(&translationMatrix);
+	//D3DXMatrixIdentity(&rotationMatrix);
+	//D3DXMatrixIdentity(&scaleMatrix);
+	//D3DXMatrixScaling(&scaleMatrix, 0.5, 0.5, 0.5);
+	//D3DXMatrixTranslation(&translationMatrix, 2, 0, 0);
+	//rotationMatrix = *D3DXMatrixRotationX(&rotationMatrix, rotation);
+	//worldMatrix = scaleMatrix * rotationMatrix * translationMatrix;
+	//
+
+	//// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
+	//m_Model_2->Render(m_D3D->GetDeviceContext());
+	//
+	//// Render the model using the light shader.
+	//result = result && m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model_2->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, 
+	//							    m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), m_Camera->GetPosition(), 
+	//								m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), deltavalue, m_Model_2->GetTexture());
+	//if(!result)
+	//{
+	//	return false;
+	//}
+
+	//// Present the rendered scene to the screen.
+	//m_D3D->EndScene();
+
+	//return true;
+}
+
+bool GraphicsClass::beginRender()
+{
 	// Clear the buffers to begin the scene.
 	m_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -211,51 +276,39 @@ bool GraphicsClass::Render(float rotation, float deltavalue)
 	// Get the world, view, and projection matrices from the camera and d3d objects.
 	m_Camera->GetViewMatrix(viewMatrix);
 	m_D3D->GetWorldMatrix(worldMatrix);
-	translationMatrix = worldMatrix;
-	rotationMatrix = worldMatrix;
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 
-	// Rotate the world matrix by the rotation value so that the model will spin.
-	D3DXMatrixIdentity(&worldMatrix);
-	D3DXMatrixRotationY(&worldMatrix, rotation);
+	return true;
+}
 
-	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	m_Model->Render(m_D3D->GetDeviceContext());
 
-	// Render the model using the light shader.
-	result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, 
-								    m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), m_Camera->GetPosition(), 
-									m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), deltavalue, m_Model->GetTexture());
-	if(!result)
-	{
-		return false;
-	}
-
-	// Rotate the world matrix by the rotation value so that the model will spin.
-	D3DXMatrixIdentity(&worldMatrix);
-	D3DXMatrixIdentity(&translationMatrix);
-	D3DXMatrixIdentity(&rotationMatrix);
-	D3DXMatrixIdentity(&scaleMatrix);
-	D3DXMatrixScaling(&scaleMatrix, 0.5, 0.5, 0.5);
-	D3DXMatrixTranslation(&translationMatrix, 2, 0, 0);
-	rotationMatrix = *D3DXMatrixRotationX(&rotationMatrix, rotation);
-	worldMatrix = scaleMatrix * rotationMatrix * translationMatrix;
-	
-
-	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	m_Model_2->Render(m_D3D->GetDeviceContext());
-	
-	// Render the model using the light shader.
-	result = result && m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model_2->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, 
-								    m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), m_Camera->GetPosition(), 
-									m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), deltavalue, m_Model_2->GetTexture());
-	if(!result)
-	{
-		return false;
-	}
-
+bool GraphicsClass::endRender()
+{
 	// Present the rendered scene to the screen.
 	m_D3D->EndScene();
 
 	return true;
+}
+
+bool GraphicsClass::modelRender(ModelClass& to_render, Coord scale, Coord translate, Coord rotate)
+{
+	D3DXMATRIX scaleMatrix, translationMatrix, rotationMatrix;
+	bool result;
+
+	// Rotate the world matrix by the rotation value so that the model will spin.
+	D3DXMatrixIdentity(&worldMatrix);
+	D3DXMatrixScaling(&scaleMatrix, scale.x, scale.y, scale.z);
+	D3DXMatrixTranslation(&translationMatrix, translate.x, translate.y, translate.z);
+	D3DXMatrixRotationYawPitchRoll(&rotationMatrix, rotate.y, rotate.x, rotate.z);
+	worldMatrix = scaleMatrix * rotationMatrix * translationMatrix;
+	
+	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
+	to_render.Render(m_D3D->GetDeviceContext());
+	
+	// Render the model using the light shader.
+	result = m_LightShader->Render(m_D3D->GetDeviceContext(), to_render.GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, 
+								    m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), m_Camera->GetPosition(), 
+									m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), 0.0f, to_render.GetTexture());
+
+	return result;
 }

@@ -13,6 +13,7 @@
 #include "modelclass.h"
 #include "lightshaderclass.h"
 #include "lightclass.h"
+#include "coord.h"
 
 
 /////////////
@@ -41,6 +42,9 @@ public:
 
 private:
 	bool Render(float, float);
+	bool beginRender();
+	bool endRender();
+	bool modelRender(ModelClass& to_render, Coord scale, Coord translate, Coord rotate);
 
 private:
 	D3DClass* m_D3D;
@@ -52,6 +56,9 @@ private:
 	ModelClass* m_Model;
 	ModelClass* m_Model_2;
 //	ModelClass*[NUM_MODELS] m_Models;
+
+	// Matrices
+	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix;
 };
 
 #endif
