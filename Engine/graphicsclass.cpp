@@ -198,7 +198,7 @@ bool GraphicsClass::Frame()
 
 bool GraphicsClass::Render(float rotation, float deltavalue)
 {
-	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix;
+	D3DXMATRIX rotationMatrix, translationMatrix, scaleMatrix, worldMatrix, viewMatrix, projectionMatrix;
 	bool result;
 
 
@@ -211,19 +211,41 @@ bool GraphicsClass::Render(float rotation, float deltavalue)
 	// Get the world, view, and projection matrices from the camera and d3d objects.
 	m_Camera->GetViewMatrix(viewMatrix);
 	m_D3D->GetWorldMatrix(worldMatrix);
+	translationMatrix = worldMatrix;
+	rotationMatrix = worldMatrix;
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 
-	// Rotate the world matrix by the rotation value so that the triangle will spin.
+	// Rotate the world matrix by the rotation value so that the model will spin.
+	D3DXMatrixIdentity(&worldMatrix);
 	D3DXMatrixRotationY(&worldMatrix, rotation);
 
 	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	m_Model->Render(m_D3D->GetDeviceContext());
-	m_Model_2->Render(m_D3D->GetDeviceContext());
 
 	// Render the model using the light shader.
 	result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, 
 								    m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), m_Camera->GetPosition(), 
 									m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), deltavalue, m_Model->GetTexture());
+	if(!result)
+	{
+		return false;
+	}
+
+	// Rotate the world matrix by the rotation value so that the model will spin.
+	D3DXMatrixIdentity(&worldMatrix);
+	D3DXMatrixIdentity(&translationMatrix);
+	D3DXMatrixIdentity(&rotationMatrix);
+	D3DXMatrixIdentity(&scaleMatrix);
+	D3DXMatrixScaling(&scaleMatrix, 0.5, 0.5, 0.5);
+	D3DXMatrixTranslation(&translationMatrix, 2, 0, 0);
+	rotationMatrix = *D3DXMatrixRotationX(&rotationMatrix, rotation);
+	worldMatrix = scaleMatrix * rotationMatrix * translationMatrix;
+	
+
+	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
+	m_Model_2->Render(m_D3D->GetDeviceContext());
+	
+	// Render the model using the light shader.
 	result = result && m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model_2->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, 
 								    m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), m_Camera->GetPosition(), 
 									m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), deltavalue, m_Model_2->GetTexture());
