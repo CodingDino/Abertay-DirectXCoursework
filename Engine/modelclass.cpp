@@ -25,6 +25,7 @@ ModelClass::~ModelClass()
 
 bool ModelClass::Initialize(ID3D11Device* device, char* modelFilename, WCHAR* textureFilename)
 {
+	debug("ModelClass:: Initialize - function called.");
 	bool result;
 
 
@@ -34,6 +35,7 @@ bool ModelClass::Initialize(ID3D11Device* device, char* modelFilename, WCHAR* te
 	{
 		return false;
 	}
+	debug("ModelClass:: Initialize - LoadModel succeeded.");
 
 	// Initialize the vertex and index buffers.
 	result = InitializeBuffers(device);
@@ -41,6 +43,7 @@ bool ModelClass::Initialize(ID3D11Device* device, char* modelFilename, WCHAR* te
 	{
 		return false;
 	}
+	debug("ModelClass:: Initialize - InitializeBuffers succeeded.");
 
 	// Load the texture for this model.
 	result = LoadTexture(device, textureFilename);
@@ -48,6 +51,7 @@ bool ModelClass::Initialize(ID3D11Device* device, char* modelFilename, WCHAR* te
 	{
 		return false;
 	}
+	debug("ModelClass:: Initialize - LoadTexture succeeded.");
 
 	return true;
 }
@@ -244,6 +248,7 @@ void ModelClass::RenderBuffers(ID3D11DeviceContext* deviceContext, float off_x, 
 
 bool ModelClass::LoadModel(char* filename)
 {
+	debug("ModelClass::LoadModel - function called.");
 	ifstream fin;
 	char input;
 	int i;
@@ -257,6 +262,7 @@ bool ModelClass::LoadModel(char* filename)
 	{
 		return false;
 	}
+	debug("ModelClass::LoadModel - file opened.");
 
 	// Read up to the value of vertex count.
 	fin.get(input);
@@ -266,7 +272,8 @@ bool ModelClass::LoadModel(char* filename)
 	}
 
 	// Read in the vertex count.
-	fin >> m_vertexCount;
+	fin >> m_vertexCount; // THIS IS WHERE IT BREAKS
+	debug("ModelClass::LoadModel - vertex count read.");
 
 	// Set the number of indices to be the same as the vertex count.
 	m_indexCount = m_vertexCount;
@@ -277,6 +284,7 @@ bool ModelClass::LoadModel(char* filename)
 	{
 		return false;
 	}
+	debug("ModelClass::LoadModel - model created.");
 
 	// Read up to the beginning of the data.
 	fin.get(input);
@@ -294,9 +302,11 @@ bool ModelClass::LoadModel(char* filename)
 		fin >> m_model[i].tu >> m_model[i].tv;
 		fin >> m_model[i].nx >> m_model[i].ny >> m_model[i].nz;
 	}
+	debug("ModelClass::LoadModel - vertex data read.");
 
 	// Close the model file.
 	fin.close();
+	debug("ModelClass::LoadModel - file closed.");
 
 	return true;
 }

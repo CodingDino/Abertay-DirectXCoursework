@@ -14,6 +14,7 @@
 #include "lightshaderclass.h"
 #include "lightclass.h"
 #include "coord.h"
+#include "Util.h"
 
 
 /////////////
@@ -23,8 +24,7 @@ const bool FULL_SCREEN = true;
 const bool VSYNC_ENABLED = true;
 const float SCREEN_DEPTH = 1000.0f;
 const float SCREEN_NEAR = 0.1f;
-const float NUM_MODELS = 2;
-
+#define NUM_MODELS 20
 
 ////////////////////////////////////////////////////////////////////////////////
 // Class name: GraphicsClass
@@ -53,9 +53,7 @@ private:
 	LightClass* m_Light;
 
 	// Models
-	ModelClass* m_Model;
-	ModelClass* m_Model_2;
-//	ModelClass*[NUM_MODELS] m_Models;
+	ModelClass** m_Models;
 
 	// Matrices
 	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix;

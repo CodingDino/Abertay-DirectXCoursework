@@ -12,6 +12,7 @@
 #include <d3dx10math.h>
 #include <fstream>
 #include "textureclass.h"
+#include "Util.h"
 using namespace std;
 
 ////////////////////////////////////////////////////////////////////////////////

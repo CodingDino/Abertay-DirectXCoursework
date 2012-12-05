@@ -8,10 +8,14 @@ GraphicsClass::GraphicsClass()
 {
 	m_D3D = 0;
 	m_Camera = 0;
-	m_Model = 0;
-	m_Model_2 = 0;
 	m_LightShader = 0;
 	m_Light = 0;
+
+	m_Models = new ModelClass*[NUM_MODELS];
+	for (int i=0; i<NUM_MODELS; ++i)
+	{
+		m_Models[i] = 0;
+	}
 }
 
 
@@ -56,29 +60,31 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Camera->SetPosition(0.0f, 0.0f, -10.0f);
 	
 	// Create the model objects.
-	m_Model = new ModelClass;
-	if(!m_Model)
+	if(m_Models)
 	{
-		return false;
-	}
-	m_Model_2 = new ModelClass;
-	if(!m_Model_2)
-	{
-		return false;
+		for (int i=0; i<NUM_MODELS; ++i)
+		{
+			m_Models[i] = new ModelClass;
+			if(!m_Models[i])
+			{
+				return false;
+			}	
+		}
 	}
 
 	// Initialize the model object.
-	result = m_Model->Initialize(m_D3D->GetDevice(), "../Engine/data/sphere.txt", L"../Engine/data/seafloor.dds");
-	if(!result)
+	debug("GraphicsClass: Initializing dynamic models...");
+	if(m_Models)
 	{
-		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
-		return false;
-	}
-	result = m_Model_2->Initialize(m_D3D->GetDevice(), "../Engine/data/sphere.txt", L"../Engine/data/seafloor.dds");
-	if(!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
-		return false;
+		for (int i=0; i<NUM_MODELS; ++i)
+		{
+			result = m_Models[i]->Initialize(m_D3D->GetDevice(), "../Engine/data/sphere.txt", L"../Engine/data/seafloor.dds");
+			if(!result)
+			{
+				MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
+				return false;
+			}
+		}
 	}
 
 	// Create the light shader object.
@@ -131,18 +137,20 @@ void GraphicsClass::Shutdown()
 		m_LightShader = 0;
 	}
 
-	// Release the model object.
-	if(m_Model)
+	// Release the model objects.
+	if(m_Models)
 	{
-		m_Model->Shutdown();
-		delete m_Model;
-		m_Model = 0;
-	}
-	if(m_Model_2)
-	{
-		m_Model_2->Shutdown();
-		delete m_Model_2;
-		m_Model_2 = 0;
+		for (int i=0; i<NUM_MODELS; ++i)
+		{
+			if(m_Models[i])
+			{
+				m_Models[i]->Shutdown();
+				delete m_Models[i];
+				m_Models[i] = 0;
+			}
+		}
+		delete[] m_Models;
+		m_Models=0;
 	}
 
 	// Release the camera object.
@@ -195,74 +203,24 @@ bool GraphicsClass::Render(float rotation, float deltavalue)
 
 	result = beginRender();
 
-	result = result && modelRender(*m_Model, Coord(1,1,1), Coord(0,0,0), Coord(0,rotation,0));
-
-	result = result && modelRender(*m_Model_2, Coord(0.5,0.5,0.5), Coord(2,0,0), Coord(rotation,-rotation,0));
+	// render the models
+	float scale(1), translate(0);
+	if(m_Models)
+	{
+		for (int i=0; i<NUM_MODELS; ++i)
+		{
+			if(m_Models[i])
+			{
+				result = result && modelRender(*m_Models[i], Coord(scale,scale,scale), Coord(-5 + translate,0,0), Coord(0,rotation,0));
+				scale *= 0.75;
+				translate += 2;
+			}
+		}
+	}
 
 	result = result && endRender();
 
 	return result;
-
-	//D3DXMATRIX rotationMatrix, translationMatrix, scaleMatrix, worldMatrix, viewMatrix, projectionMatrix;
-	//bool result;
-
-
-	//// Clear the buffers to begin the scene.
-	//m_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
-
-	//// Generate the view matrix based on the camera's position.
-	//m_Camera->Render();
-
-	//// Get the world, view, and projection matrices from the camera and d3d objects.
-	//m_Camera->GetViewMatrix(viewMatrix);
-	//m_D3D->GetWorldMatrix(worldMatrix);
-	//translationMatrix = worldMatrix;
-	//rotationMatrix = worldMatrix;
-	//m_D3D->GetProjectionMatrix(projectionMatrix);
-
-	//// Rotate the world matrix by the rotation value so that the model will spin.
-	//D3DXMatrixIdentity(&worldMatrix);
-	//D3DXMatrixRotationY(&worldMatrix, rotation);
-
-	//// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	//m_Model->Render(m_D3D->GetDeviceContext());
-
-	//// Render the model using the light shader.
-	//result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, 
-	//							    m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), m_Camera->GetPosition(), 
-	//								m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), deltavalue, m_Model->GetTexture());
-	//if(!result)
-	//{
-	//	return false;
-	//}
-
-	//// Rotate the world matrix by the rotation value so that the model will spin.
-	//D3DXMatrixIdentity(&worldMatrix);
-	//D3DXMatrixIdentity(&translationMatrix);
-	//D3DXMatrixIdentity(&rotationMatrix);
-	//D3DXMatrixIdentity(&scaleMatrix);
-	//D3DXMatrixScaling(&scaleMatrix, 0.5, 0.5, 0.5);
-	//D3DXMatrixTranslation(&translationMatrix, 2, 0, 0);
-	//rotationMatrix = *D3DXMatrixRotationX(&rotationMatrix, rotation);
-	//worldMatrix = scaleMatrix * rotationMatrix * translationMatrix;
-	//
-
-	//// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	//m_Model_2->Render(m_D3D->GetDeviceContext());
-	//
-	//// Render the model using the light shader.
-	//result = result && m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model_2->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, 
-	//							    m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), m_Camera->GetPosition(), 
-	//								m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), deltavalue, m_Model_2->GetTexture());
-	//if(!result)
-	//{
-	//	return false;
-	//}
-
-	//// Present the rendered scene to the screen.
-	//m_D3D->EndScene();
-
-	//return true;
 }
 
 bool GraphicsClass::beginRender()
