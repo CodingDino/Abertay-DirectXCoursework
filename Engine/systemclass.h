@@ -1,72 +1,92 @@
-////////////////////////////////////////////////////////////////////////////////
-// Filename: systemclass.h
-////////////////////////////////////////////////////////////////////////////////
-#ifndef _SYSTEMCLASS_H_
-#define _SYSTEMCLASS_H_
+// Solar Exploration Sim
+// Developed for DirectX Coursework for Abertay University
+// Copyright Sarah Herzog, 2011, all rights reserved.
+//
+// GraphicsClass
+//		Overall control of graphics and rendering, holds model objects and other graphics objects
+#pragma once
 
 
-///////////////////////////////
-// PRE-PROCESSING DIRECTIVES //
-///////////////////////////////
+// |----------------------------------------------------------------------------|
+// |						Pre-Processing Directives							|
+// |----------------------------------------------------------------------------|
 #define WIN32_LEAN_AND_MEAN
 
 
-//////////////
-// INCLUDES //
-//////////////
+// |----------------------------------------------------------------------------|
+// |								Includes									|
+// |----------------------------------------------------------------------------|
 #include <windows.h>
-
-
-///////////////////////
-// MY CLASS INCLUDES //
-///////////////////////
 #include "inputclass.h"
 #include "graphicsclass.h"
 #include "gameclass.h"
 
 
-////////////////////////////////////////////////////////////////////////////////
-// Class name: SystemClass
-////////////////////////////////////////////////////////////////////////////////
+// |----------------------------------------------------------------------------|
+// |							Class: SystemClass								|
+// |----------------------------------------------------------------------------|
 class SystemClass
 {
 public:
+
+	//|-------------------------------Public Functions--------------------------|
+
+	// Constructors and Destructors
 	SystemClass();
 	SystemClass(const SystemClass&);
 	~SystemClass();
 
+	// Initialize all data members
 	bool Initialize();
+
+	// Release all data members
 	void Shutdown();
+
+	// Run the game (contains main game loop)
 	void Run();
 
-	LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM);
+	// Handles system messages
+	LRESULT CALLBACK MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam);
 
 private:
+
+	//|-------------------------------Private Functions-------------------------|
+
+	// Processes each frame (calles input, game, render frame functions)
 	bool Frame();
-	void InitializeWindows(int&, int&);
+
+	// Performs Windows initialization tasks
+	void InitializeWindows(int& screenWidth, int& screenHeight);
+
+	// Performs Windows shutdown tasks
 	void ShutdownWindows();
 
 private:
+
+	// Windows parameters
 	LPCWSTR m_applicationName;
 	HINSTANCE m_hinstance;
 	HWND m_hwnd;
 
+	// Input handler
 	InputClass* m_Input;
+
+	// Graphics handler
 	GraphicsClass* m_Graphics;
+
+	// Game logic handler
 	GameClass* m_Game;
 };
 
 
-/////////////////////////
-// FUNCTION PROTOTYPES //
-/////////////////////////
-static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-
-
-/////////////
-// GLOBALS //
-/////////////
+// |----------------------------------------------------------------------------|
+// |								 Globals									|
+// |----------------------------------------------------------------------------|
 static SystemClass* ApplicationHandle = 0;
 
 
-#endif
+// |----------------------------------------------------------------------------|
+// |							Function Prototypes								|
+// |----------------------------------------------------------------------------|
+static LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam);
+

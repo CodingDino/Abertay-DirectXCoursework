@@ -1,52 +1,32 @@
-////////////////////////////////////////////////////////////////////////////////
-// Filename: coord.h
-////////////////////////////////////////////////////////////////////////////////
-#ifndef _COORD_H_
-#define _COORD_H_
+// Solar Exploration Sim
+// Developed for DirectX Coursework for Abertay University
+// Copyright Sarah Herzog, 2011, all rights reserved.
+//
+// Coord
+//		Simple struct-like class containing an x, y, and z float coordinate
+#pragma once
 
 
-///////////////////////////////
-// PRE-PROCESSING DIRECTIVES //
-///////////////////////////////
-
-
-//////////////
-// INCLUDES //
-//////////////
-
-
-///////////////////////
-// MY CLASS INCLUDES //
-///////////////////////
-
-
-////////////////////////////////////////////////////////////////////////////////
-// Class name: Coord
-////////////////////////////////////////////////////////////////////////////////
+// |----------------------------------------------------------------------------|
+// |							 Class: Coord									|
+// |----------------------------------------------------------------------------|
 class Coord
 {
 public:
+	//|-------------------------------Public Functions--------------------------|
+
+	// Constrcutors and Deconstructors
 	Coord();
 	Coord(const Coord&);
 	~Coord();
-
+	
+	// Argument Constructors and Operator Overloading
 	Coord(const float new_x, const float new_y, const float new_z);
 	Coord& operator= (const Coord& other);
 	Coord& operator= (const float uniform_value);
+	
+	//|-----------------------------Public Data Members-------------------------|
 
+	// floats holding coordinate values
 	float x, y, z;
-
 };
-
-
-/////////////////////////
-// FUNCTION PROTOTYPES //
-/////////////////////////
-
-
-/////////////
-// GLOBALS //
-/////////////
-
-
-#endif

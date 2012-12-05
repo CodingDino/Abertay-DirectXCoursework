@@ -1,31 +1,51 @@
-////////////////////////////////////////////////////////////////////////////////
-// Filename: lightshaderclass.cpp
-////////////////////////////////////////////////////////////////////////////////
+// Solar Exploration Sim
+// Developed for DirectX Coursework for Abertay University
+// Copyright Sarah Herzog, 2011, all rights reserved.
+//
+// LightShaderClass
+//		Wraps and interacts with the shaders (vertex and pixel shaders)
+
+
+// |----------------------------------------------------------------------------|
+// |								Includes									|
+// |----------------------------------------------------------------------------|
 #include "lightshaderclass.h"
 
 
-LightShaderClass::LightShaderClass()
+// |----------------------------------------------------------------------------|
+// |						   Default Constructor								|
+// |----------------------------------------------------------------------------|
+LightShaderClass::LightShaderClass() :
+	m_vertexShader(0),
+	m_pixelShader(0),
+	m_layout(0),
+	m_sampleState(0),
+	m_matrixBuffer(0),
+	m_lightBuffer(0),
+	m_cameraBuffer(0)
 {
-	m_vertexShader = 0;
-	m_pixelShader = 0;
-	m_layout = 0;
-	m_sampleState = 0;
-	m_matrixBuffer = 0;
-	m_lightBuffer = 0;
-	m_cameraBuffer = 0;
 }
 
-
+	
+// |----------------------------------------------------------------------------|
+// |						    Copy Constructor								|
+// |----------------------------------------------------------------------------|
 LightShaderClass::LightShaderClass(const LightShaderClass& other)
 {
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						     Deconstructor									|
+// |----------------------------------------------------------------------------|
 LightShaderClass::~LightShaderClass()
 {
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						      Initialize									|
+// |----------------------------------------------------------------------------|
 bool LightShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 {
 	bool result;
@@ -42,6 +62,9 @@ bool LightShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						      Shutdown										|
+// |----------------------------------------------------------------------------|
 void LightShaderClass::Shutdown()
 {
 	// Shutdown the vertex and pixel shaders as well as the related objects.
@@ -50,6 +73,10 @@ void LightShaderClass::Shutdown()
 	return;
 }
 
+
+// |----------------------------------------------------------------------------|
+// |						       Render										|
+// |----------------------------------------------------------------------------|
 bool LightShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, 
 			      D3DXMATRIX projectionMatrix, D3DXVECTOR3 lightDirection, D3DXVECTOR4 ambientColor, D3DXVECTOR4 diffuseColor, 
 				  D3DXVECTOR3 cameraPosition, D3DXVECTOR4 specularColor, float specularPower, float deltavalue, ID3D11ShaderResourceView* texture)
@@ -72,6 +99,9 @@ bool LightShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						     InitializeShader								|
+// |----------------------------------------------------------------------------|
 bool LightShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
 {
 	HRESULT result;
@@ -226,6 +256,7 @@ bool LightShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* 
 	}
 
 	// Setup the description of the variable dynamic constant buffer that is in the vertex shader.
+	// TODO REMOVE THIS
 	variableBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 	variableBufferDesc.ByteWidth = sizeof(VariableBufferType);
 	variableBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -234,6 +265,7 @@ bool LightShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* 
 	variableBufferDesc.StructureByteStride = 0;
 
 	// Create the variable constant buffer pointer so we can access the vertex shader constant buffer from within this class.
+	// TODO REMOVE THIS
 	result = device->CreateBuffer(&variableBufferDesc, NULL, &m_variableBuffer);
 	if(FAILED(result))
 	{
@@ -275,6 +307,9 @@ bool LightShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* 
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						      ShutdownShader								|
+// |----------------------------------------------------------------------------|
 void LightShaderClass::ShutdownShader()
 {
 	// Release the light constant buffer.
@@ -337,6 +372,9 @@ void LightShaderClass::ShutdownShader()
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						  OutputShaderErrorMessage							|
+// |----------------------------------------------------------------------------|
 void LightShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, WCHAR* shaderFilename)
 {
 	char* compileErrors;
@@ -372,6 +410,11 @@ void LightShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND h
 	return;
 }
 
+
+// |----------------------------------------------------------------------------|
+// |						    SetShaderParameters								|
+// |----------------------------------------------------------------------------|
+// TODO: Remove deltavalue and variablebuffer references
 bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, 
 										   D3DXMATRIX projectionMatrix, D3DXVECTOR3 lightDirection, D3DXVECTOR4 ambientColor,
 										   D3DXVECTOR4 diffuseColor, D3DXVECTOR3 cameraPosition, D3DXVECTOR4 specularColor, 
@@ -416,6 +459,7 @@ bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D
     deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
 
 	//VARIABLE BUFFER
+	// TODO: REMOVE
 	result = deviceContext->Map(m_variableBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if(FAILED(result))
 	{
@@ -423,13 +467,16 @@ bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D
 	}
 
 	// Get a pointer to the data in the constant buffer.
+	// TODO: REMOVE
 	dataPtr3 = (VariableBufferType*)mappedResource.pData;
 
 	// Copy the variablethe constant buffer.
+	// TODO: REMOVE
 	dataPtr3->delta = deltavalue;
 	dataPtr3->padding =lightDirection; //this is just padding so this data isnt used.
 
 	// Unlock the variable constant buffer.
+	// TODO: REMOVE
 	deviceContext->Unmap(m_variableBuffer, 0);
 
 	// Lock the camera constant buffer so it can be written to.
@@ -447,6 +494,7 @@ bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D
 	dataPtr4->padding = 0.0f;
 
 	// Set the position of the camera constant buffer in the vertex shader.
+	// TODO: may need to change this since we've the variablebuffer, not sure - check rastertek
 	bufferNumber = 1;
 
 	// Now set the camera constant buffer in the vertex shader with the updated values.
@@ -490,6 +538,9 @@ bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						        RenderShader								|
+// |----------------------------------------------------------------------------|
 void LightShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, int indexCount)
 {
 	// Set the vertex input layout.

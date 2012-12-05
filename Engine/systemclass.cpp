@@ -1,27 +1,47 @@
-////////////////////////////////////////////////////////////////////////////////
-// Filename: systemclass.cpp
-////////////////////////////////////////////////////////////////////////////////
+// Solar Exploration Sim
+// Developed for DirectX Coursework for Abertay University
+// Copyright Sarah Herzog, 2011, all rights reserved.
+//
+// GraphicsClass
+//		Overall control of graphics and rendering, holds model objects and other graphics objects
+
+
+// |----------------------------------------------------------------------------|
+// |								Includes									|
+// |----------------------------------------------------------------------------|
 #include "systemclass.h"
 
 
-SystemClass::SystemClass()
+// |----------------------------------------------------------------------------|
+// |						   Default Constructor								|
+// |----------------------------------------------------------------------------|
+SystemClass::SystemClass() :
+	m_Input(0),
+	m_Graphics(0),
+	m_Game(0)
 {
-	m_Input = 0;
-	m_Graphics = 0;
-	m_Game = 0;
 }
 
-
+	
+// |----------------------------------------------------------------------------|
+// |						    Copy Constructor								|
+// |----------------------------------------------------------------------------|
 SystemClass::SystemClass(const SystemClass& other)
 {
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						     Deconstructor									|
+// |----------------------------------------------------------------------------|
 SystemClass::~SystemClass()
 {
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						      Initialize									|
+// |----------------------------------------------------------------------------|
 bool SystemClass::Initialize()
 {
 	int screenWidth, screenHeight;
@@ -84,6 +104,9 @@ bool SystemClass::Initialize()
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						      Shutdown										|
+// |----------------------------------------------------------------------------|
 void SystemClass::Shutdown()
 {
 	// Release the graphics object.
@@ -117,6 +140,9 @@ void SystemClass::Shutdown()
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						        Run											|
+// |----------------------------------------------------------------------------|
 void SystemClass::Run()
 {
 	MSG msg;
@@ -164,6 +190,9 @@ void SystemClass::Run()
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						       Frame										|
+// |----------------------------------------------------------------------------|
 bool SystemClass::Frame()
 {
 	bool result;
@@ -194,13 +223,18 @@ bool SystemClass::Frame()
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						   MessageHandler									|
+// |----------------------------------------------------------------------------|
 LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
 {
 	return DefWindowProc(hwnd, umsg, wparam, lparam);
 }
 
 
-
+// |----------------------------------------------------------------------------|
+// |						 InitializeWindows									|
+// |----------------------------------------------------------------------------|
 void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 {
 	WNDCLASSEX wc;
@@ -283,6 +317,9 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						 ShutdownWindows									|
+// |----------------------------------------------------------------------------|
 void SystemClass::ShutdownWindows()
 {
 	// Show the mouse cursor.
@@ -309,6 +346,9 @@ void SystemClass::ShutdownWindows()
 }
 
 
+// |----------------------------------------------------------------------------|
+// |							WndProc											|
+// |----------------------------------------------------------------------------|
 LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 {
 	switch(umessage)

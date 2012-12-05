@@ -1,32 +1,53 @@
-////////////////////////////////////////////////////////////////////////////////
-// Filename: d3dclass.cpp
-////////////////////////////////////////////////////////////////////////////////
+// Solar Exploration Sim
+// Developed for DirectX Coursework for Abertay University
+// Copyright Sarah Herzog, 2011, all rights reserved.
+//
+// D3dClass
+//		Controls main DirectX objects and handles backbuffer and display device
+
+
+// |----------------------------------------------------------------------------|
+// |								Includes									|
+// |----------------------------------------------------------------------------|
 #include "d3dclass.h"
 
 
-D3DClass::D3DClass()
+// |----------------------------------------------------------------------------|
+// |						   Default Constructor								|
+// |----------------------------------------------------------------------------|
+D3DClass::D3DClass() :
+	m_swapChain(0),
+	m_device(0),
+	m_deviceContext(0),
+	m_renderTargetView(0),
+	m_depthStencilBuffer(0),
+	m_depthStencilState(0),
+	m_depthStencilView(0),
+	m_rasterState(0)
+
 {
-	m_swapChain = 0;
-	m_device = 0;
-	m_deviceContext = 0;
-	m_renderTargetView = 0;
-	m_depthStencilBuffer = 0;
-	m_depthStencilState = 0;
-	m_depthStencilView = 0;
-	m_rasterState = 0;
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						    Copy Constructor								|
+// |----------------------------------------------------------------------------|
 D3DClass::D3DClass(const D3DClass& other)
 {
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						     Deconstructor									|
+// |----------------------------------------------------------------------------|
 D3DClass::~D3DClass()
 {
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						      Initialize									|
+// |----------------------------------------------------------------------------|
 bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hwnd, bool fullscreen, 
 						  float screenDepth, float screenNear)
 {
@@ -350,6 +371,9 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						      Shutdown										|
+// |----------------------------------------------------------------------------|
 void D3DClass::Shutdown()
 {
 	// Before shutting down set to windowed mode or when you release the swap chain it will throw an exception.
@@ -410,6 +434,9 @@ void D3DClass::Shutdown()
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						     BeginScene										|
+// |----------------------------------------------------------------------------|
 void D3DClass::BeginScene(float red, float green, float blue, float alpha)
 {
 	float color[4];
@@ -431,6 +458,9 @@ void D3DClass::BeginScene(float red, float green, float blue, float alpha)
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						      EndScene										|
+// |----------------------------------------------------------------------------|
 void D3DClass::EndScene()
 {
 	// Present the back buffer to the screen since rendering is complete.
@@ -449,18 +479,27 @@ void D3DClass::EndScene()
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						      GetDevice										|
+// |----------------------------------------------------------------------------|
 ID3D11Device* D3DClass::GetDevice()
 {
 	return m_device;
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						   GetDeviceContext									|
+// |----------------------------------------------------------------------------|
 ID3D11DeviceContext* D3DClass::GetDeviceContext()
 {
 	return m_deviceContext;
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						  GetProjectionMatrix								|
+// |----------------------------------------------------------------------------|
 void D3DClass::GetProjectionMatrix(D3DXMATRIX& projectionMatrix)
 {
 	projectionMatrix = m_projectionMatrix;
@@ -468,6 +507,9 @@ void D3DClass::GetProjectionMatrix(D3DXMATRIX& projectionMatrix)
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						    GetWorldMatrix									|
+// |----------------------------------------------------------------------------|
 void D3DClass::GetWorldMatrix(D3DXMATRIX& worldMatrix)
 {
 	worldMatrix = m_worldMatrix;
@@ -475,6 +517,9 @@ void D3DClass::GetWorldMatrix(D3DXMATRIX& worldMatrix)
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						    GetOrthoMatrix									|
+// |----------------------------------------------------------------------------|
 void D3DClass::GetOrthoMatrix(D3DXMATRIX& orthoMatrix)
 {
 	orthoMatrix = m_orthoMatrix;
@@ -482,6 +527,9 @@ void D3DClass::GetOrthoMatrix(D3DXMATRIX& orthoMatrix)
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						   GetVideoCardInfo									|
+// |----------------------------------------------------------------------------|
 void D3DClass::GetVideoCardInfo(char* cardName, int& memory)
 {
 	strcpy_s(cardName, 128, m_videoCardDescription);

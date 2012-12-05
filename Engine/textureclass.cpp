@@ -1,25 +1,45 @@
-////////////////////////////////////////////////////////////////////////////////
-// Filename: textureclass.cpp
-////////////////////////////////////////////////////////////////////////////////
+// Solar Exploration Sim
+// Developed for DirectX Coursework for Abertay University
+// Copyright Sarah Herzog, 2011, all rights reserved.
+//
+// TextureClass
+//		Holds one texture
+
+
+// |----------------------------------------------------------------------------|
+// |								Includes									|
+// |----------------------------------------------------------------------------|
 #include "textureclass.h"
 
 
-TextureClass::TextureClass()
+// |----------------------------------------------------------------------------|
+// |						   Default Constructor								|
+// |----------------------------------------------------------------------------|
+TextureClass::TextureClass() :
+	m_texture(0)
 {
-	m_texture = 0;
 }
 
-
+	
+// |----------------------------------------------------------------------------|
+// |						    Copy Constructor								|
+// |----------------------------------------------------------------------------|
 TextureClass::TextureClass(const TextureClass& other)
 {
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						     Deconstructor									|
+// |----------------------------------------------------------------------------|
 TextureClass::~TextureClass()
 {
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						      Initialize									|
+// |----------------------------------------------------------------------------|
 bool TextureClass::Initialize(ID3D11Device* device, WCHAR* filename)
 {
 	HRESULT result;
@@ -36,6 +56,9 @@ bool TextureClass::Initialize(ID3D11Device* device, WCHAR* filename)
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						      Shutdown										|
+// |----------------------------------------------------------------------------|
 void TextureClass::Shutdown()
 {
 	// Release the texture resource.
@@ -49,6 +72,9 @@ void TextureClass::Shutdown()
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						     GetTexture										|
+// |----------------------------------------------------------------------------|
 ID3D11ShaderResourceView* TextureClass::GetTexture()
 {
 	return m_texture;

@@ -1,33 +1,52 @@
-////////////////////////////////////////////////////////////////////////////////
-// Filename: modelclass.cpp
-////////////////////////////////////////////////////////////////////////////////
+// Solar Exploration Sim
+// Developed for DirectX Coursework for Abertay University
+// Copyright Sarah Herzog, 2011, all rights reserved.
+//
+// ModelClass
+//		Contains model and texture data
+
+
+// |----------------------------------------------------------------------------|
+// |								Includes									|
+// |----------------------------------------------------------------------------|
 #include "modelclass.h"
 
 
-ModelClass::ModelClass()
+// |----------------------------------------------------------------------------|
+// |						   Default Constructor								|
+// |----------------------------------------------------------------------------|
+ModelClass::ModelClass() :
+	m_vertexBuffer(0),
+	m_indexBuffer(0),
+	m_model(0),
+	m_Texture(0)
 {
-	m_vertexBuffer = 0;
-	m_indexBuffer = 0;
-	m_model = 0;
-	m_Texture = 0;
 }
 
-
+	
+// |----------------------------------------------------------------------------|
+// |						    Copy Constructor								|
+// |----------------------------------------------------------------------------|
 ModelClass::ModelClass(const ModelClass& other)
 {
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						     Deconstructor									|
+// |----------------------------------------------------------------------------|
 ModelClass::~ModelClass()
 {
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						      Initialize									|
+// |----------------------------------------------------------------------------|
 bool ModelClass::Initialize(ID3D11Device* device, char* modelFilename, WCHAR* textureFilename)
 {
 	debug("ModelClass:: Initialize - function called.");
 	bool result;
-
 
 	// Load in the model data,
 	result = LoadModel(modelFilename);
@@ -57,6 +76,9 @@ bool ModelClass::Initialize(ID3D11Device* device, char* modelFilename, WCHAR* te
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						      Shutdown										|
+// |----------------------------------------------------------------------------|
 void ModelClass::Shutdown()
 {
 
@@ -73,6 +95,9 @@ void ModelClass::Shutdown()
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						       Render										|
+// |----------------------------------------------------------------------------|
 void ModelClass::Render(ID3D11DeviceContext* deviceContext)
 {
 	// Put the vertex and index buffers on the graphics pipeline to prepare them for drawing.
@@ -82,17 +107,27 @@ void ModelClass::Render(ID3D11DeviceContext* deviceContext)
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						    GetIndexCount									|
+// |----------------------------------------------------------------------------|
 int ModelClass::GetIndexCount()
 {
 	return m_indexCount;
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						     GetTexture										|
+// |----------------------------------------------------------------------------|
 ID3D11ShaderResourceView* ModelClass::GetTexture()
 {
 	return m_Texture->GetTexture();
 }
 
+
+// |----------------------------------------------------------------------------|
+// |						  InitializeBuffers									|
+// |----------------------------------------------------------------------------|
 bool ModelClass::InitializeBuffers(ID3D11Device* device)
 {
 	VertexType* vertices;
@@ -178,6 +213,9 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						   ShutdownBuffers									|
+// |----------------------------------------------------------------------------|
 void ModelClass::ShutdownBuffers()
 {
 	// Release the index buffer.
@@ -198,12 +236,14 @@ void ModelClass::ShutdownBuffers()
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						   RenderBuffers									|
+// |----------------------------------------------------------------------------|
 void ModelClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 {
 	unsigned int stride;
 	unsigned int offset;
 
-
 	// Set vertex buffer stride and offset.
 	stride = sizeof(VertexType); 
 	offset = 0;
@@ -221,31 +261,9 @@ void ModelClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 }
 
 
-
-void ModelClass::RenderBuffers(ID3D11DeviceContext* deviceContext, float off_x, float off_y, float off_z)
-{
-	unsigned int stride;
-	unsigned int offset;
-
-
-	// Set vertex buffer stride and offset.
-	stride = sizeof(VertexType); 
-	offset = 0;
-    
-	// Set the vertex buffer to active in the input assembler so it can be rendered.
-	deviceContext->IASetVertexBuffers(0, 1, &m_vertexBuffer, &stride, &offset);
-
-    // Set the index buffer to active in the input assembler so it can be rendered.
-	deviceContext->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-
-    // Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	return;
-}
-
-
-
+// |----------------------------------------------------------------------------|
+// |				   		    LoadModel										|
+// |----------------------------------------------------------------------------|
 bool ModelClass::LoadModel(char* filename)
 {
 	debug("ModelClass::LoadModel - function called.");
@@ -312,6 +330,9 @@ bool ModelClass::LoadModel(char* filename)
 }
 
 
+// |----------------------------------------------------------------------------|
+// |				   		   ReleaseModel										|
+// |----------------------------------------------------------------------------|
 void ModelClass::ReleaseModel()
 {
 	if(m_model)
@@ -324,6 +345,9 @@ void ModelClass::ReleaseModel()
 }
 
 
+// |----------------------------------------------------------------------------|
+// |				   		   LoadTexture										|
+// |----------------------------------------------------------------------------|
 bool ModelClass::LoadTexture(ID3D11Device* device, WCHAR* filename)
 {
 	bool result;
@@ -347,6 +371,9 @@ bool ModelClass::LoadTexture(ID3D11Device* device, WCHAR* filename)
 }
 
 
+// |----------------------------------------------------------------------------|
+// |				   		  ReleaseTexture									|
+// |----------------------------------------------------------------------------|
 void ModelClass::ReleaseTexture()
 {
 	// Release the texture object.

@@ -1,31 +1,51 @@
-////////////////////////////////////////////////////////////////////////////////
-// Filename: cameraclass.cpp
-////////////////////////////////////////////////////////////////////////////////
-#include "cameraclass.h"
+// Solar Exploration Sim
+// Developed for DirectX Coursework for Abertay University
+// Copyright Sarah Herzog, 2011, all rights reserved.
+//
+// CameraClass
+//		Methods for setting the position and rotation of the camera.
 
 
-CameraClass::CameraClass()
+// |----------------------------------------------------------------------------|
+// |								Includes									|
+// |----------------------------------------------------------------------------|
+#include "CameraClass.h"
+
+
+// |----------------------------------------------------------------------------|
+// |						   Default Constructor								|
+// |----------------------------------------------------------------------------|
+CameraClass::CameraClass() :
+	m_positionX(0.0f),
+	m_positionY(0.0f),
+	m_positionZ(0.0f),
+
+	m_rotationX(0.0f),
+	m_rotationY(0.0f),
+	m_rotationZ(0.0f)
 {
-	m_positionX = 0.0f;
-	m_positionY = 0.0f;
-	m_positionZ = 0.0f;
-
-	m_rotationX = 0.0f;
-	m_rotationY = 0.0f;
-	m_rotationZ = 0.0f;
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						    Copy Constructor								|
+// |----------------------------------------------------------------------------|
 CameraClass::CameraClass(const CameraClass& other)
 {
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						     Deconstructor									|
+// |----------------------------------------------------------------------------|
 CameraClass::~CameraClass()
 {
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						     SetPosition									|
+// |----------------------------------------------------------------------------|
 void CameraClass::SetPosition(float x, float y, float z)
 {
 	m_positionX = x;
@@ -35,6 +55,9 @@ void CameraClass::SetPosition(float x, float y, float z)
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						     SetRotation									|
+// |----------------------------------------------------------------------------|
 void CameraClass::SetRotation(float x, float y, float z)
 {
 	m_rotationX = x;
@@ -44,18 +67,38 @@ void CameraClass::SetRotation(float x, float y, float z)
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						     GetPosition									|
+// |----------------------------------------------------------------------------|
 D3DXVECTOR3 CameraClass::GetPosition()
 {
 	return D3DXVECTOR3(m_positionX, m_positionY, m_positionZ);
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						     GetRotation									|
+// |----------------------------------------------------------------------------|
 D3DXVECTOR3 CameraClass::GetRotation()
 {
 	return D3DXVECTOR3(m_rotationX, m_rotationY, m_rotationZ);
 }
 
 
+
+// |----------------------------------------------------------------------------|
+// |						     GetViewMatrix									|
+// |----------------------------------------------------------------------------|
+void CameraClass::GetViewMatrix(D3DXMATRIX& viewMatrix)
+{
+	viewMatrix = m_viewMatrix;
+	return;
+}
+
+
+// |----------------------------------------------------------------------------|
+// |						       Render										|
+// |----------------------------------------------------------------------------|
 void CameraClass::Render()
 {
 	D3DXVECTOR3 up, position, lookAt;
@@ -96,12 +139,5 @@ void CameraClass::Render()
 	// Finally create the view matrix from the three updated vectors.
 	D3DXMatrixLookAtLH(&m_viewMatrix, &position, &lookAt, &up);
 
-	return;
-}
-
-
-void CameraClass::GetViewMatrix(D3DXMATRIX& viewMatrix)
-{
-	viewMatrix = m_viewMatrix;
 	return;
 }

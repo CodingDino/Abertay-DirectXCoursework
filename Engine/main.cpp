@@ -1,6 +1,14 @@
-////////////////////////////////////////////////////////////////////////////////
-// Filename: main.cpp
-////////////////////////////////////////////////////////////////////////////////
+// Solar Exploration Sim
+// Developed for DirectX Coursework for Abertay University
+// Copyright Sarah Herzog, 2011, all rights reserved.
+//
+// Main
+//		Program wrapper.
+
+
+// |----------------------------------------------------------------------------|
+// |								Includes									|
+// |----------------------------------------------------------------------------|
 #include "systemclass.h"
 
 
@@ -47,10 +55,16 @@ Added a dynamic array of models - got stuck on array initialization though. When
 Wrote debug function, debugged issue - hadn't actually created model objects (oops)
 Fixed issue, dynamic array implemented!
 
+05-12-2012
+Noticed that in my line of spheres, the lighting direction seems to change on each model slightly, from upper left to directly above. Going to need to investigate this.
+I should note that several days ago I changed this to DX10 so it's compatible with my laptop.
+
 TODO
-	- Make file names, commenting, headers, etc more uniform
 	- DONE! Write debug function
 	- DONE! Debug problem with dynamic array model initialization
+	- Make file names, commenting, headers, etc more uniform
+	- Remove references to deltavalue, variablebuffer - check rastertek tutorials
+	- Investigate lighting change over different models or positions
 	- Game objects with pointers to models, draw themselves
 	- Input
 	- Camera movement

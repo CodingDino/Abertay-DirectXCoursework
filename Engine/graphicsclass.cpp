@@ -1,34 +1,49 @@
-////////////////////////////////////////////////////////////////////////////////
-// Filename: graphicsclass.cpp
-////////////////////////////////////////////////////////////////////////////////
+// Solar Exploration Sim
+// Developed for DirectX Coursework for Abertay University
+// Copyright Sarah Herzog, 2011, all rights reserved.
+//
+// GraphicsClass
+//		Overall control of graphics and rendering, holds model objects and other graphics objects
+
+
+// |----------------------------------------------------------------------------|
+// |								Includes									|
+// |----------------------------------------------------------------------------|
 #include "graphicsclass.h"
 
 
-GraphicsClass::GraphicsClass()
+// |----------------------------------------------------------------------------|
+// |						   Default Constructor								|
+// |----------------------------------------------------------------------------|
+GraphicsClass::GraphicsClass() :
+	m_D3D(0),
+	m_Camera(0),
+	m_LightShader(0),
+	m_Light(0),
+	m_Models(0)
 {
-	m_D3D = 0;
-	m_Camera = 0;
-	m_LightShader = 0;
-	m_Light = 0;
-
-	m_Models = new ModelClass*[NUM_MODELS];
-	for (int i=0; i<NUM_MODELS; ++i)
-	{
-		m_Models[i] = 0;
-	}
 }
 
-
+	
+// |----------------------------------------------------------------------------|
+// |						    Copy Constructor								|
+// |----------------------------------------------------------------------------|
 GraphicsClass::GraphicsClass(const GraphicsClass& other)
 {
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						     Deconstructor									|
+// |----------------------------------------------------------------------------|
 GraphicsClass::~GraphicsClass()
 {
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						      Initialize									|
+// |----------------------------------------------------------------------------|
 bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 {
 	bool result;
@@ -60,6 +75,11 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Camera->SetPosition(0.0f, 0.0f, -10.0f);
 	
 	// Create the model objects.
+	m_Models = new ModelClass*[NUM_MODELS];
+	for (int i=0; i<NUM_MODELS; ++i)
+	{
+		m_Models[i] = 0;
+	}
 	if(m_Models)
 	{
 		for (int i=0; i<NUM_MODELS; ++i)
@@ -120,6 +140,9 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						      Shutdown										|
+// |----------------------------------------------------------------------------|
 void GraphicsClass::Shutdown()
 {
 	// Release the light object.
@@ -172,22 +195,15 @@ void GraphicsClass::Shutdown()
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						       Frame										|
+// |----------------------------------------------------------------------------|
 bool GraphicsClass::Frame()
 {
 	bool result;
-	static float rotation = 0.0f;
-	static float delta =0.0f;
-
-
-	// Update the rotation variable each frame.
-	rotation += (float)D3DX_PI * 0.01f;
-	if(rotation > 360.0f)
-	{
-		rotation -= 360.0f;
-	}
 	
 	// Render the graphics scene.
-	result = Render(rotation, delta);
+	result = Render();
 	if(!result)
 	{
 		return false;
@@ -197,11 +213,23 @@ bool GraphicsClass::Frame()
 }
 
 
-bool GraphicsClass::Render(float rotation, float deltavalue)
+// |----------------------------------------------------------------------------|
+// |						      Render										|
+// |----------------------------------------------------------------------------|
+bool GraphicsClass::Render()
 {
 	bool result;
+	static float rotation = 0.0f;
 
-	result = beginRender();
+	// Update the rotation variable each call.
+	// TODO: Remove (this is just for the rotation to start out)
+	rotation += (float)D3DX_PI * 0.01f;
+	if(rotation > 360.0f)
+	{
+		rotation -= 360.0f;
+	}
+
+	result = BeginRender();
 
 	// render the models
 	float scale(1), translate(0);
@@ -211,19 +239,23 @@ bool GraphicsClass::Render(float rotation, float deltavalue)
 		{
 			if(m_Models[i])
 			{
-				result = result && modelRender(*m_Models[i], Coord(scale,scale,scale), Coord(-5 + translate,0,0), Coord(0,rotation,0));
+				result = result && ModelRender(*m_Models[i], Coord(scale,scale,scale), Coord(-5 + translate,0,0), Coord(0,rotation,0));
 				scale *= 0.75;
 				translate += 2;
 			}
 		}
 	}
 
-	result = result && endRender();
+	result = result && EndRender();
 
 	return result;
 }
 
-bool GraphicsClass::beginRender()
+
+// |----------------------------------------------------------------------------|
+// |						    BeginRender										|
+// |----------------------------------------------------------------------------|
+bool GraphicsClass::BeginRender()
 {
 	// Clear the buffers to begin the scene.
 	m_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
@@ -240,7 +272,10 @@ bool GraphicsClass::beginRender()
 }
 
 
-bool GraphicsClass::endRender()
+// |----------------------------------------------------------------------------|
+// |						    EndRender										|
+// |----------------------------------------------------------------------------|
+bool GraphicsClass::EndRender()
 {
 	// Present the rendered scene to the screen.
 	m_D3D->EndScene();
@@ -248,7 +283,11 @@ bool GraphicsClass::endRender()
 	return true;
 }
 
-bool GraphicsClass::modelRender(ModelClass& to_render, Coord scale, Coord translate, Coord rotate)
+
+// |----------------------------------------------------------------------------|
+// |						    ModelRender										|
+// |----------------------------------------------------------------------------|
+bool GraphicsClass::ModelRender(ModelClass& to_render, Coord scale, Coord translate, Coord rotate)
 {
 	D3DXMATRIX scaleMatrix, translationMatrix, rotationMatrix;
 	bool result;
@@ -264,6 +303,7 @@ bool GraphicsClass::modelRender(ModelClass& to_render, Coord scale, Coord transl
 	to_render.Render(m_D3D->GetDeviceContext());
 	
 	// Render the model using the light shader.
+	// TODO: Remove delta value passed in (0.0f)
 	result = m_LightShader->Render(m_D3D->GetDeviceContext(), to_render.GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, 
 								    m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), m_Camera->GetPosition(), 
 									m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), 0.0f, to_render.GetTexture());

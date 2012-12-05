@@ -1,9 +1,21 @@
-////////////////////////////////////////////////////////////////////////////////
-// Filename: inputclass.cpp
-////////////////////////////////////////////////////////////////////////////////
+// Solar Exploration Sim
+// Developed for DirectX Coursework for Abertay University
+// Copyright Sarah Herzog, 2011, all rights reserved.
+//
+// InputClass
+//		Gets and processes input to be made available for game class to use in 
+//		game logic.
+
+
+// |----------------------------------------------------------------------------|
+// |								Includes									|
+// |----------------------------------------------------------------------------|
 #include "inputclass.h"
 
 
+// |----------------------------------------------------------------------------|
+// |						   Default Constructor								|
+// |----------------------------------------------------------------------------|
 InputClass::InputClass()
 {
 	m_directInput = 0;
@@ -12,16 +24,25 @@ InputClass::InputClass()
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						    Copy Constructor								|
+// |----------------------------------------------------------------------------|
 InputClass::InputClass(const InputClass& other)
 {
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						     Deconstructor									|
+// |----------------------------------------------------------------------------|
 InputClass::~InputClass()
 {
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						      Initialize									|
+// |----------------------------------------------------------------------------|
 bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int screenHeight)
 {
 	HRESULT result;
@@ -102,6 +123,9 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						      Shutdown										|
+// |----------------------------------------------------------------------------|
 void InputClass::Shutdown()
 {
 	// Release the mouse.
@@ -131,6 +155,9 @@ void InputClass::Shutdown()
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						       Frame										|
+// |----------------------------------------------------------------------------|
 bool InputClass::Frame()
 {
 	bool result;
@@ -157,6 +184,9 @@ bool InputClass::Frame()
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						    ReadKeyboard									|
+// |----------------------------------------------------------------------------|
 bool InputClass::ReadKeyboard()
 {
 	HRESULT result;
@@ -181,6 +211,9 @@ bool InputClass::ReadKeyboard()
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						      ReadMouse										|
+// |----------------------------------------------------------------------------|
 bool InputClass::ReadMouse()
 {
 	HRESULT result;
@@ -205,6 +238,9 @@ bool InputClass::ReadMouse()
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						     ProcessInput									|
+// |----------------------------------------------------------------------------|
 void InputClass::ProcessInput()
 {
 	// Update the location of the mouse cursor based on the change of the mouse location during the frame.
@@ -222,6 +258,9 @@ void InputClass::ProcessInput()
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						   IsEscapePressed									|
+// |----------------------------------------------------------------------------|
 bool InputClass::IsEscapePressed()
 {
 	// Do a bitwise and on the keyboard state to check if the escape key is currently being pressed.
@@ -234,6 +273,9 @@ bool InputClass::IsEscapePressed()
 }
 
 
+// |----------------------------------------------------------------------------|
+// |						   GetMouseLocation									|
+// |----------------------------------------------------------------------------|
 void InputClass::GetMouseLocation(int& mouseX, int& mouseY)
 {
 	mouseX = m_mouseX;
