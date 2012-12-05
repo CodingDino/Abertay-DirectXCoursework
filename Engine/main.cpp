@@ -58,12 +58,16 @@ Fixed issue, dynamic array implemented!
 05-12-2012
 Noticed that in my line of spheres, the lighting direction seems to change on each model slightly, from upper left to directly above. Going to need to investigate this.
 I should note that several days ago I changed this to DX10 so it's compatible with my laptop.
+Made file names uniform in style
+Made comments uniform in style
+Added commented explanations for each class, function, and data member
+Removed references to "deltavalue" and "variablebuffer" as they aren't used in the program now.
 
 TODO
 	- DONE! Write debug function
 	- DONE! Debug problem with dynamic array model initialization
-	- Make file names, commenting, headers, etc more uniform
-	- Remove references to deltavalue, variablebuffer - check rastertek tutorials
+	- DONE! Make file names, commenting, headers, etc more uniform
+	- DONE!Remove references to deltavalue, variablebuffer - check rastertek tutorials
 	- Investigate lighting change over different models or positions
 	- Game objects with pointers to models, draw themselves
 	- Input

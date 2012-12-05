@@ -303,10 +303,9 @@ bool GraphicsClass::ModelRender(ModelClass& to_render, Coord scale, Coord transl
 	to_render.Render(m_D3D->GetDeviceContext());
 	
 	// Render the model using the light shader.
-	// TODO: Remove delta value passed in (0.0f)
 	result = m_LightShader->Render(m_D3D->GetDeviceContext(), to_render.GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, 
 								    m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), m_Camera->GetPosition(), 
-									m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), 0.0f, to_render.GetTexture());
+									m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), to_render.GetTexture());
 
 	return result;
 }

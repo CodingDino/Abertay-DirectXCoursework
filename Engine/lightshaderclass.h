@@ -34,13 +34,6 @@ private:
 		D3DXMATRIX projection;
 	};
 
-	// TODO: REMOVE (does nothing atm)
-	struct VariableBufferType
-	{
-		float delta;
-		D3DXVECTOR3 padding;
-	};
-
 	// Wraps the camera information to send to vertex shader
 	struct CameraBufferType
 	{
@@ -74,9 +67,8 @@ public:
 	void Shutdown();
 
 	// Renders the provided matrices to the DX device
-	// TODO: Remove deltavlue!
 	bool Render(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX , D3DXVECTOR3, D3DXVECTOR4, D3DXVECTOR4, 
-				  D3DXVECTOR3 cameraPosition, D3DXVECTOR4 specularColor, float specularPower, float deltavalue, ID3D11ShaderResourceView*);
+				  D3DXVECTOR3 cameraPosition, D3DXVECTOR4 specularColor, float specularPower, ID3D11ShaderResourceView*);
 
 private:
 
@@ -92,9 +84,8 @@ private:
 	void OutputShaderErrorMessage(ID3D10Blob*, HWND, WCHAR*);
 
 	// Passes information to shaders
-	// TODO: remove deltavalue!
 	bool SetShaderParameters(ID3D11DeviceContext*, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXVECTOR3, D3DXVECTOR4, D3DXVECTOR4, 
-				  D3DXVECTOR3 cameraPosition, D3DXVECTOR4 specularColor, float specularPower, float deltavalue, ID3D11ShaderResourceView*);
+				  D3DXVECTOR3 cameraPosition, D3DXVECTOR4 specularColor, float specularPower, ID3D11ShaderResourceView*);
 
 	// Renders shader to device
 	void RenderShader(ID3D11DeviceContext*, int);
@@ -115,7 +106,6 @@ private:
 
 	// Buffers
 	ID3D11Buffer* m_matrixBuffer;
-	ID3D11Buffer* m_variableBuffer;
 	ID3D11Buffer* m_lightBuffer;
 	ID3D11Buffer* m_cameraBuffer;
 };
