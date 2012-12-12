@@ -131,7 +131,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	// Initialize the light object.
 	m_Light->SetAmbientColor(0.05f, 0.05f, 0.05f, 1.0f);
-	m_Light->SetDiffuseColor(1.0f, 0.0f, 0.0f, 1.0f);
+	m_Light->SetDiffuseColor(0.0f, 1.0f, 0.0f, 1.0f);
 	m_Light->SetDirection(1.0f, -1.0f, 1.0f);
 	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetSpecularPower(16.0f);
@@ -239,9 +239,32 @@ bool GraphicsClass::Render()
 		{
 			if(m_Models[i])
 			{
-				result = result && ModelRender(*m_Models[i], Coord(scale,scale,scale), Coord(-5 + translate,0,0), Coord(0,rotation,0));
-				scale *= 0.75;
-				translate += 2;
+				result = result && ModelRender(*m_Models[i], Coord(scale,scale,scale), Coord(-6 + translate,0,0), Coord(0,rotation,0));
+				translate += 3;
+			}
+		}
+	}
+	translate = 0;
+	if(m_Models)
+	{
+		for (int i=0; i<NUM_MODELS; ++i)
+		{
+			if(m_Models[i])
+			{
+				result = result && ModelRender(*m_Models[i], Coord(scale,scale,scale), Coord(-6 + translate,-3,0), Coord(0,rotation,0));
+				translate += 3;
+			}
+		}
+	}
+	translate = 0;
+	if(m_Models)
+	{
+		for (int i=0; i<NUM_MODELS; ++i)
+		{
+			if(m_Models[i])
+			{
+				result = result && ModelRender(*m_Models[i], Coord(scale,scale,scale), Coord(-6 + translate,3,0), Coord(0,rotation,0));
+				translate += 3;
 			}
 		}
 	}
