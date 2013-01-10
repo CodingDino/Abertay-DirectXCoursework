@@ -2,8 +2,8 @@
 // Developed for DirectX Coursework for Abertay University
 // Copyright Sarah Herzog, 2011, all rights reserved.
 //
-// GraphicsClass
-//		Overall control of graphics and rendering, holds model objects and other graphics objects
+// SystemClass
+//		Contains management classes for game objects, graphics, and input.
 
 
 // |----------------------------------------------------------------------------|
@@ -86,12 +86,13 @@ bool SystemClass::Initialize()
 		return false;
 	}
 
-	// Create game object
+	// Create game object which will control physics and logic of game objects
 	m_Game = new GameClass;
 	if(!m_Game)
 	{
 		return false;
 	}
+
 	// Initialize the game object.
 	result = m_Game->Initialize();
 	if(!result)

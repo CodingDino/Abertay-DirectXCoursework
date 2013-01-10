@@ -407,7 +407,7 @@ bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D
 	D3DXMatrixTranspose(&viewMatrix, &viewMatrix);
 	D3DXMatrixTranspose(&projectionMatrix, &projectionMatrix);
 
-	// Lock the constant buffer so it can be written to.
+	// Lock the matrix constant buffer so it can be written to.
 	result = deviceContext->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if(FAILED(result))
 	{
@@ -503,7 +503,7 @@ void LightShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, int inde
 	// Set the sampler state in the pixel shader.
 	deviceContext->PSSetSamplers(0, 1, &m_sampleState);
 
-	// Render the triangle.
+	// Render the model.
 	deviceContext->DrawIndexed(indexCount, 0, 0);
 
 	return;

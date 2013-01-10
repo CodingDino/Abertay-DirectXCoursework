@@ -2,8 +2,8 @@
 // Developed for DirectX Coursework for Abertay University
 // Copyright Sarah Herzog, 2011, all rights reserved.
 //
-// GraphicsClass
-//		Overall control of graphics and rendering, holds model objects and other graphics objects
+// SystemClass
+//		Contains management classes for game objects, graphics, and input.
 #pragma once
 
 

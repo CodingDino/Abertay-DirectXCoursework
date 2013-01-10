@@ -50,7 +50,7 @@ public:
 	void Shutdown();
 
 	// Frame-by-frame graphics processing
-	// TODO: pass in array of game objects to be rendered 
+	// TODO: pass in array of game objects to be rendered (or have game object render itself????)
 	bool Frame();
 
 private:
