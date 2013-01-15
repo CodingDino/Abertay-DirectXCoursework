@@ -54,6 +54,12 @@
     <ClCompile Include="TextureClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BitmapClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureShaderClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Util.h">
@@ -92,12 +98,24 @@
     <ClInclude Include="TextureClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="BitmapClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureShaderClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="light.ps">
       <Filter>Shader Files</Filter>
     </None>
     <None Include="light.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="texture.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="texture.ps">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

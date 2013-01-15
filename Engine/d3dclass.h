@@ -60,6 +60,10 @@ public:
 	void GetOrthoMatrix(D3DXMATRIX&);
 	void GetVideoCardInfo(char*, int&);
 
+	// Z Bufffer modification
+	void TurnZBufferOn();
+	void TurnZBufferOff();
+
 private:
 
 	//|-----------------------------Private Data Members------------------------|
@@ -80,6 +84,7 @@ private:
 	ID3D11DepthStencilState* m_depthStencilState;
 	ID3D11DepthStencilView* m_depthStencilView;
 	ID3D11RasterizerState* m_rasterState;
+	ID3D11DepthStencilState* m_depthDisabledStencilState;
 
 	// Matrices
 	D3DXMATRIX m_projectionMatrix;

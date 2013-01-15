@@ -78,6 +78,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BitmapClass.cpp" />
     <ClCompile Include="CameraClass.cpp" />
     <ClCompile Include="Coord.cpp" />
     <ClCompile Include="D3dClass.cpp" />
@@ -90,9 +91,11 @@
     <ClCompile Include="ModelClass.cpp" />
     <ClCompile Include="SystemClass.cpp" />
     <ClCompile Include="TextureClass.cpp" />
+    <ClCompile Include="TextureShaderClass.cpp" />
     <ClCompile Include="Util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BitmapClass.h" />
     <ClInclude Include="CameraClass.h" />
     <ClInclude Include="Coord.h" />
     <ClInclude Include="D3dClass.h" />
@@ -104,11 +107,14 @@
     <ClInclude Include="ModelClass.h" />
     <ClInclude Include="SystemClass.h" />
     <ClInclude Include="TextureClass.h" />
+    <ClInclude Include="TextureShaderClass.h" />
     <ClInclude Include="Util.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="light.ps" />
     <None Include="light.vs" />
+    <None Include="texture.ps" />
+    <None Include="texture.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

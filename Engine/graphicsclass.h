@@ -14,9 +14,11 @@
 #include "cameraclass.h"
 #include "modelclass.h"
 #include "lightshaderclass.h"
+#include "textureshaderclass.h"
 #include "lightclass.h"
-#include "coord.h"
+#include "Coord.h"
 #include "Util.h"
+#include "BitmapClass.h"
 
 
 // |----------------------------------------------------------------------------|
@@ -70,6 +72,9 @@ private:
 	// Renders the passed in model using the given transforms
 	bool ModelRender(ModelClass& to_render, Coord scale, Coord translate, Coord rotate);
 
+	// Renders the passed in bitmap using the given transforms
+	bool BitmapRender(BitmapClass& to_render, Coord scale, Coord translate, Coord rotate);
+
 private:
 
 	//|-----------------------------Private Data Members------------------------|
@@ -80,8 +85,9 @@ private:
 	// Camera
 	CameraClass* m_Camera;
 
-	// Light shader
+	// Shaders
 	LightShaderClass* m_LightShader;
+	TextureShaderClass* m_TextureShader;
 
 	// Light source 
 	// TODO: make an array of light sources, lights should be placeable in the scene
@@ -91,5 +97,8 @@ private:
 	ModelClass** m_Models;
 
 	// Matrices
-	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix;
+	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
+
+	// TODO: Make an array (if I want more than one)
+	BitmapClass* m_Bitmap;
 };

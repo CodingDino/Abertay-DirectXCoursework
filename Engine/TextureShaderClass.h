@@ -2,7 +2,7 @@
 // Developed for DirectX Coursework for Abertay University
 // Copyright Sarah Herzog, 2011, all rights reserved.
 //
-// LightShaderClass
+// TextureShaderClass
 //		Wraps and interacts with the shaders (vertex and pixel shaders)
 #pragma once
 
@@ -18,9 +18,9 @@ using namespace std;
 
 
 // |----------------------------------------------------------------------------|
-// |						Class: LightShaderClass								|
+// |					    Class: TextureShaderClass							|
 // |----------------------------------------------------------------------------|
-class LightShaderClass
+class TextureShaderClass
 {
 private:
 
@@ -34,31 +34,14 @@ private:
 		D3DXMATRIX projection;
 	};
 
-	// Wraps the camera information to send to vertex shader
-	struct CameraBufferType
-	{
-		D3DXVECTOR3 cameraPosition;
-		float padding;
-	};
-
-	// Wraps lighting information to send to pixel shader
-	struct LightBufferType
-	{
-		D3DXVECTOR4 ambientColor;
-		D3DXVECTOR4 diffuseColor;
-		D3DXVECTOR3 lightDirection;
-		float specularPower;
-		D3DXVECTOR4 specularColor;
-	};
-
 public:
 
 	//|-------------------------------Public Functions--------------------------|
 	
 	// Constructors and Destructors
-	LightShaderClass();
-	LightShaderClass(const LightShaderClass&);
-	~LightShaderClass();
+	TextureShaderClass();
+	TextureShaderClass(const TextureShaderClass&);
+	~TextureShaderClass();
 	
 	// Initializes the shaders
 	bool Initialize(ID3D11Device* device, HWND hwnd);
@@ -67,10 +50,9 @@ public:
 	void Shutdown();
 
 	// Renders the provided matrices to the DX device
-	bool Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, 
-					D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, D3DXVECTOR3 lightDirection, 
-					D3DXVECTOR4 ambientColor, D3DXVECTOR4 diffuseColor,  D3DXVECTOR3 cameraPosition, 
-					D3DXVECTOR4 specularColor, float specularPower, ID3D11ShaderResourceView* texture);
+	bool Render(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX,
+		ID3D11ShaderResourceView*);
+
 private:
 
 	//|-------------------------------Private Functions-------------------------|
@@ -85,8 +67,8 @@ private:
 	void OutputShaderErrorMessage(ID3D10Blob*, HWND, WCHAR*);
 
 	// Passes information to shaders
-	bool SetShaderParameters(ID3D11DeviceContext*, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXVECTOR3, D3DXVECTOR4, D3DXVECTOR4, 
-				  D3DXVECTOR3 cameraPosition, D3DXVECTOR4 specularColor, float specularPower, ID3D11ShaderResourceView*);
+	bool SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, 
+					     D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture);
 
 	// Renders shader to device
 	void RenderShader(ID3D11DeviceContext*, int);
@@ -107,6 +89,4 @@ private:
 
 	// Buffers
 	ID3D11Buffer* m_matrixBuffer;
-	ID3D11Buffer* m_lightBuffer;
-	ID3D11Buffer* m_cameraBuffer;
 };

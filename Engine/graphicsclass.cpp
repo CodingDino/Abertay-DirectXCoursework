@@ -19,8 +19,10 @@ GraphicsClass::GraphicsClass() :
 	m_D3D(0),
 	m_Camera(0),
 	m_LightShader(0),
+	m_TextureShader(0),
 	m_Light(0),
-	m_Models(0)
+	m_Models(0),
+	m_Bitmap(0)
 {
 }
 
@@ -107,18 +109,30 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		}
 	}
 
-	// Create the light shader object.
+	// Create the shader objects.
 	m_LightShader = new LightShaderClass;
 	if(!m_LightShader)
 	{
 		return false;
 	}
+	m_TextureShader = new TextureShaderClass;
+	if(!m_LightShader)
+	{
+		return false;
+	}
+	
 
 	// Initialize the light shader object.
 	result = m_LightShader->Initialize(m_D3D->GetDevice(), hwnd);
 	if(!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the light shader object.", L"Error", MB_OK);
+		return false;
+	}
+	result = m_TextureShader->Initialize(m_D3D->GetDevice(), hwnd);
+	if(!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the texture shader object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -136,6 +150,21 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetSpecularPower(16.0f);
 
+	// Create the bitmap object.
+	m_Bitmap = new BitmapClass;
+	if(!m_Bitmap)
+	{
+		return false;
+	}
+
+	// Initialize the bitmap object.
+	result = m_Bitmap->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, L"../Engine/data/seafloor.dds", 256, 256);
+	if(!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
+		return false;
+	}
+
 	return true;
 }
 
@@ -145,6 +174,15 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 // |----------------------------------------------------------------------------|
 void GraphicsClass::Shutdown()
 {
+
+	// Release the bitmap object.
+	if(m_Bitmap)
+	{
+		m_Bitmap->Shutdown();
+		delete m_Bitmap;
+		m_Bitmap = 0;
+	}
+
 	// Release the light object.
 	if(m_Light)
 	{
@@ -152,12 +190,18 @@ void GraphicsClass::Shutdown()
 		m_Light = 0;
 	}
 
-	// Release the light shader object.
+	// Release the shader objects.
 	if(m_LightShader)
 	{
 		m_LightShader->Shutdown();
 		delete m_LightShader;
 		m_LightShader = 0;
+	}
+	if(m_TextureShader)
+	{
+		m_TextureShader->Shutdown();
+		delete m_TextureShader;
+		m_TextureShader = 0;
 	}
 
 	// Release the model objects.
@@ -269,6 +313,16 @@ bool GraphicsClass::Render()
 		}
 	}
 
+	// Turn off the Z buffer to begin all 2D rendering.
+	m_D3D->TurnZBufferOff();
+
+	// Render bitmap
+	result = result && BitmapRender(*m_Bitmap, Coord(1,1,1), Coord(0,0,0), Coord(0,0,0));
+
+	// Turn the Z buffer back on now that all 2D rendering has completed.
+	m_D3D->TurnZBufferOn();
+
+	// Perform closing actions
 	result = result && EndRender();
 
 	return result;
@@ -290,6 +344,7 @@ bool GraphicsClass::BeginRender()
 	m_Camera->GetViewMatrix(viewMatrix);
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
+	m_D3D->GetOrthoMatrix(orthoMatrix);
 
 	return true;
 }
@@ -315,7 +370,7 @@ bool GraphicsClass::ModelRender(ModelClass& to_render, Coord scale, Coord transl
 	D3DXMATRIX scaleMatrix, translationMatrix, rotationMatrix;
 	bool result;
 
-	// Rotate the world matrix by the rotation value so that the model will spin.
+	// Modify the world matrix as needed.
 	D3DXMatrixIdentity(&worldMatrix);
 	D3DXMatrixScaling(&scaleMatrix, scale.x, scale.y, scale.z);
 	D3DXMatrixTranslation(&translationMatrix, translate.x, translate.y, translate.z);
@@ -329,6 +384,40 @@ bool GraphicsClass::ModelRender(ModelClass& to_render, Coord scale, Coord transl
 	result = m_LightShader->Render(m_D3D->GetDeviceContext(), to_render.GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, 
 								    m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), m_Camera->GetPosition(), 
 									m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), to_render.GetTexture());
+
+	return result;
+}
+
+
+
+// |----------------------------------------------------------------------------|
+// |						    BitmapRender									|
+// |----------------------------------------------------------------------------|
+bool GraphicsClass::BitmapRender(BitmapClass& to_render, Coord scale, 
+	Coord translate, Coord rotate)
+{
+	D3DXMATRIX scaleMatrix, translationMatrix, rotationMatrix;
+	bool result;
+
+	// Rotate the world matrix by the rotation value so that the model will spin.
+	D3DXMatrixIdentity(&worldMatrix);
+	//D3DXMatrixScaling(&scaleMatrix, scale.x, scale.y, scale.z);
+	//D3DXMatrixTranslation(&translationMatrix, translate.x, translate.y, translate.z);
+	//D3DXMatrixRotationYawPitchRoll(&rotationMatrix, rotate.y, rotate.x, rotate.z);
+	//worldMatrix = scaleMatrix * rotationMatrix * translationMatrix;
+	
+	// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
+	result = m_Bitmap->Render(m_D3D->GetDeviceContext(), translate.x, translate.y);
+	if(!result)
+	{
+		return false;
+	}
+	// Render the bitmap with the texture shader.
+	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Bitmap->GetIndexCount(), worldMatrix, viewMatrix, orthoMatrix, m_Bitmap->GetTexture());
+	if(!result)
+	{
+		return false;
+	}
 
 	return result;
 }
