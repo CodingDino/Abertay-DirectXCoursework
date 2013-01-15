@@ -432,7 +432,7 @@ bool BitmapClass::LoadTexture(ID3D11Device* device, WCHAR* filename)
 
 
 // |----------------------------------------------------------------------------|
-// |							 LoadTexture									|
+// |							 ReleaseTexture									|
 // |----------------------------------------------------------------------------|
 /*This ReleaseTexture function releases the texture that was loaded.*/
 void BitmapClass::ReleaseTexture()

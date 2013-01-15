@@ -22,7 +22,8 @@ GraphicsClass::GraphicsClass() :
 	m_TextureShader(0),
 	m_Light(0),
 	m_Models(0),
-	m_Bitmap(0)
+	m_Bitmap(0),
+	m_Text(0)
 {
 }
 
@@ -50,6 +51,9 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 {
 	bool result;
 
+	// Record screen dimmensions
+	m_screenWidth = screenWidth;
+	m_screenHeight = screenHeight;
 
 	// Create the Direct3D object.
 	m_D3D = new D3DClass;
@@ -72,6 +76,11 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	{
 		return false;
 	}
+
+	// Initialize a base view matrix with the camera for 2D user interface rendering.
+	m_Camera->SetPosition(0.0f, 0.0f, -1.0f);
+	m_Camera->Render();
+	m_Camera->GetViewMatrix(baseViewMatrix);
 
 	// Set the initial position of the camera.
 	m_Camera->SetPosition(0.0f, 0.0f, -10.0f);
@@ -158,12 +167,28 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Initialize the bitmap object.
-	result = m_Bitmap->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, L"../Engine/data/seafloor.dds", 256, 256);
+	result = m_Bitmap->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, L"../Engine/data/seafloor.dds", 100, 100);
 	if(!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
 		return false;
 	}
+
+	// Create the text object.
+	m_Text = new TextClass;
+	if(!m_Text)
+	{
+		return false;
+	}
+
+	// Initialize the text object.
+	result = m_Text->Initialize(m_D3D->GetDevice(), m_D3D->GetDeviceContext(), hwnd, screenWidth, screenHeight, baseViewMatrix);
+	if(!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the text object.", L"Error", MB_OK);
+		return false;
+	}
+
 
 	return true;
 }
@@ -174,6 +199,13 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 // |----------------------------------------------------------------------------|
 void GraphicsClass::Shutdown()
 {
+	// Release the text object.
+	if(m_Text)
+	{
+		m_Text->Shutdown();
+		delete m_Text;
+		m_Text = 0;
+	}
 
 	// Release the bitmap object.
 	if(m_Bitmap)
@@ -275,7 +307,7 @@ bool GraphicsClass::Render()
 
 	result = BeginRender();
 
-	// render the models
+	// MODEL rendering
 	float scale(1), translate(0);
 	if(m_Models)
 	{
@@ -295,7 +327,7 @@ bool GraphicsClass::Render()
 		{
 			if(m_Models[i])
 			{
-				result = result && ModelRender(*m_Models[i], Coord(scale,scale,scale), Coord(-6 + translate,-3,0), Coord(0,rotation,0));
+				result = result && ModelRender(*m_Models[i], Coord(scale,scale,scale), Coord(-6 + translate,3,0), Coord(0,rotation,0));
 				translate += 3;
 			}
 		}
@@ -307,7 +339,7 @@ bool GraphicsClass::Render()
 		{
 			if(m_Models[i])
 			{
-				result = result && ModelRender(*m_Models[i], Coord(scale,scale,scale), Coord(-6 + translate,3,0), Coord(0,rotation,0));
+				result = result && ModelRender(*m_Models[i], Coord(scale,scale,scale), Coord(-6 + translate,-3,0), Coord(0,rotation,0));
 				translate += 3;
 			}
 		}
@@ -316,8 +348,21 @@ bool GraphicsClass::Render()
 	// Turn off the Z buffer to begin all 2D rendering.
 	m_D3D->TurnZBufferOff();
 
-	// Render bitmap
-	result = result && BitmapRender(*m_Bitmap, Coord(1,1,1), Coord(0,0,0), Coord(0,0,0));
+	// BITMAP rendering
+	result = result && BitmapRender(*m_Bitmap, m_screenWidth/2-50, m_screenHeight/2-50);
+
+	// Turn on the alpha blending before rendering the text.
+	m_D3D->TurnOnAlphaBlending();
+
+	// TEXT rendering
+	result = m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
+	if(!result)
+	{
+		return false;
+	}
+
+	// Turn off alpha blending after rendering the text.
+	m_D3D->TurnOffAlphaBlending();
 
 	// Turn the Z buffer back on now that all 2D rendering has completed.
 	m_D3D->TurnZBufferOn();
@@ -393,27 +438,22 @@ bool GraphicsClass::ModelRender(ModelClass& to_render, Coord scale, Coord transl
 // |----------------------------------------------------------------------------|
 // |						    BitmapRender									|
 // |----------------------------------------------------------------------------|
-bool GraphicsClass::BitmapRender(BitmapClass& to_render, Coord scale, 
-	Coord translate, Coord rotate)
+bool GraphicsClass::BitmapRender(BitmapClass& to_render, int x, int y)
 {
-	D3DXMATRIX scaleMatrix, translationMatrix, rotationMatrix;
 	bool result;
 
-	// Rotate the world matrix by the rotation value so that the model will spin.
+	// Change world matrix to identity before rendering.
 	D3DXMatrixIdentity(&worldMatrix);
-	//D3DXMatrixScaling(&scaleMatrix, scale.x, scale.y, scale.z);
-	//D3DXMatrixTranslation(&translationMatrix, translate.x, translate.y, translate.z);
-	//D3DXMatrixRotationYawPitchRoll(&rotationMatrix, rotate.y, rotate.x, rotate.z);
-	//worldMatrix = scaleMatrix * rotationMatrix * translationMatrix;
 	
 	// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	result = m_Bitmap->Render(m_D3D->GetDeviceContext(), translate.x, translate.y);
+	result = m_Bitmap->Render(m_D3D->GetDeviceContext(), x, y);
 	if(!result)
 	{
 		return false;
 	}
 	// Render the bitmap with the texture shader.
-	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Bitmap->GetIndexCount(), worldMatrix, viewMatrix, orthoMatrix, m_Bitmap->GetTexture());
+	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Bitmap->GetIndexCount(), 
+		worldMatrix, baseViewMatrix, orthoMatrix, m_Bitmap->GetTexture());
 	if(!result)
 	{
 		return false;

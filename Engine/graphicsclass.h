@@ -19,6 +19,7 @@
 #include "Coord.h"
 #include "Util.h"
 #include "BitmapClass.h"
+#include "textclass.h"
 
 
 // |----------------------------------------------------------------------------|
@@ -73,7 +74,7 @@ private:
 	bool ModelRender(ModelClass& to_render, Coord scale, Coord translate, Coord rotate);
 
 	// Renders the passed in bitmap using the given transforms
-	bool BitmapRender(BitmapClass& to_render, Coord scale, Coord translate, Coord rotate);
+	bool BitmapRender(BitmapClass& to_render, int x, int y);
 
 private:
 
@@ -97,8 +98,15 @@ private:
 	ModelClass** m_Models;
 
 	// Matrices
-	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
+	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix, baseViewMatrix;
 
 	// TODO: Make an array (if I want more than one)
 	BitmapClass* m_Bitmap;
+
+	// TODO: Make an array (if I want more than one)
+	TextClass* m_Text;
+
+	// Screen dimmensions
+	int m_screenWidth;
+	int m_screenHeight;
 };
