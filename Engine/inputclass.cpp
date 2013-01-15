@@ -274,6 +274,22 @@ bool InputClass::IsEscapePressed()
 
 
 // |----------------------------------------------------------------------------|
+// |						   IsForwardPressed									|
+// |----------------------------------------------------------------------------|
+bool InputClass::IsForwardPressed()
+{
+	// Do a bitwise and on the keyboard state to check if the escape key is currently being pressed.
+	// TODO: Correct key state index
+	if(m_keyboardState[DIK_ESCAPE] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+
+// |----------------------------------------------------------------------------|
 // |						   GetMouseLocation									|
 // |----------------------------------------------------------------------------|
 void InputClass::GetMouseLocation(int& mouseX, int& mouseY)

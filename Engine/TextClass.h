@@ -52,6 +52,9 @@ public:
 	// Renders the font as a 2D texture to the DX device
 	bool Render(ID3D11DeviceContext*, D3DXMATRIX, D3DXMATRIX);
 
+	// TEMP: Sets the mouse position for this text
+	bool SetMousePosition(int, int, ID3D11DeviceContext*);
+
 private:
 
 	//|-------------------------------Private Functions-------------------------|

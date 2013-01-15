@@ -33,7 +33,7 @@ const int NUM_MODELS=20;
 
 
 // |----------------------------------------------------------------------------|
-// |							Class: D3DClass									|
+// |					       Class: GraphicsClass								|
 // |----------------------------------------------------------------------------|
 class GraphicsClass
 {
@@ -54,7 +54,7 @@ public:
 
 	// Frame-by-frame graphics processing
 	// TODO: pass in array of game objects to be rendered (or have game object render itself????)
-	bool Frame();
+	bool Frame(int, int);
 
 private:
 
@@ -62,7 +62,7 @@ private:
 
 	// Calls render functions in order
 	// TODO: Merge this with Frame(), maybe?
-	bool Render();
+	bool Render(int mouseX, int mouseY);
 
 	// Rendering setup (starts scene, gets world, view, and projection matrix)
 	bool BeginRender();

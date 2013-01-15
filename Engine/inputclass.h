@@ -53,6 +53,9 @@ public:
 	// Checks if the escape button is pressed
 	bool IsEscapePressed();
 
+	// Checks if the forward button is pressed
+	bool IsForwardPressed();
+
 	// Gets mouse position
 	void GetMouseLocation(int& mouseX, int& mouseY);
 

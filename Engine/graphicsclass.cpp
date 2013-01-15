@@ -167,7 +167,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Initialize the bitmap object.
-	result = m_Bitmap->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, L"../Engine/data/seafloor.dds", 100, 100);
+	result = m_Bitmap->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, L"../Engine/data/crosshair.png", 60, 50);
 	if(!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
@@ -274,12 +274,19 @@ void GraphicsClass::Shutdown()
 // |----------------------------------------------------------------------------|
 // |						       Frame										|
 // |----------------------------------------------------------------------------|
-bool GraphicsClass::Frame()
+bool GraphicsClass::Frame(int mouseX, int mouseY)
 {
 	bool result;
 	
 	// Render the graphics scene.
-	result = Render();
+	result = Render(mouseX, mouseY);
+	if(!result)
+	{
+		return false;
+	}
+
+	// Set the location of the mouse.
+	result = m_Text->SetMousePosition(mouseX, mouseY, m_D3D->GetDeviceContext());
 	if(!result)
 	{
 		return false;
@@ -292,7 +299,7 @@ bool GraphicsClass::Frame()
 // |----------------------------------------------------------------------------|
 // |						      Render										|
 // |----------------------------------------------------------------------------|
-bool GraphicsClass::Render()
+bool GraphicsClass::Render(int mouseX, int mouseY)
 {
 	bool result;
 	static float rotation = 0.0f;
@@ -348,11 +355,11 @@ bool GraphicsClass::Render()
 	// Turn off the Z buffer to begin all 2D rendering.
 	m_D3D->TurnZBufferOff();
 
-	// BITMAP rendering
-	result = result && BitmapRender(*m_Bitmap, m_screenWidth/2-50, m_screenHeight/2-50);
-
 	// Turn on the alpha blending before rendering the text.
 	m_D3D->TurnOnAlphaBlending();
+
+	// BITMAP rendering
+	result = result && BitmapRender(*m_Bitmap, mouseX-30, mouseY-25);
 
 	// TEXT rendering
 	result = m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
