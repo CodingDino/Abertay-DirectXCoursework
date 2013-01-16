@@ -19,6 +19,11 @@ cbuffer CameraBuffer
     float cameraPadding;
 };
 
+cbuffer LightPositionBuffer
+{
+    float4 lightPosition;
+};
+
 //////////////
 // TYPEDEFS //
 //////////////
@@ -35,6 +40,7 @@ struct PixelInputType
     float2 tex : TEXCOORD0;
     float3 normal : NORMAL;
     float3 viewDirection : TEXCOORD1;
+    float3 lightPos : TEXCOORD2;
 };
 
 
@@ -71,6 +77,12 @@ PixelInputType LightVertexShader(VertexInputType input)
 	
     // Normalize the viewing direction vector.
     output.viewDirection = normalize(output.viewDirection);
+
+	// Determine the light positions based on the position of the lights and the position of the vertex in the world.
+    output.lightPos.xyz = lightPosition.xyz - worldPosition.xyz;
+
+    // Normalize the light position vectors.
+    output.lightPos = normalize(output.lightPos);
 
     return output;
 }

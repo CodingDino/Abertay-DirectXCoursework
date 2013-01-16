@@ -259,7 +259,8 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	// Initialize the light object.
 	m_Light->SetAmbientColor(0.05f, 0.05f, 0.05f, 1.0f);
 	m_Light->SetDiffuseColor(1.0f, 1.0f, 0.75f, 1.0f);
-	m_Light->SetDirection(1.0f, -1.0f, 1.0f);
+	//m_Light->SetDirection(1.0f, -1.0f, 1.0f);
+	m_Light->SetPosition(0.0f, 0.0f, 0.0f);
 	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetSpecularPower(16.0f);
 
@@ -497,7 +498,7 @@ bool GraphicsClass::Render(int mouseX, int mouseY)
 	ModelClass* planet_model(0);
 
 	m_sun->GetModel(planet_model);
-	result = result && ModelRender(*planet_model, m_sun->GetScale(), m_sun->GetTranslate(), 
+	result = result && SunRender(*planet_model, m_sun->GetScale(), m_sun->GetTranslate(), 
 		m_sun->GetRotate());
 	
 	m_mercury->GetModel(planet_model);
@@ -613,7 +614,32 @@ bool GraphicsClass::ModelRender(ModelClass& to_render, D3DXMATRIX scale,
 	
 	// Render the model using the light shader.
 	result = m_LightShader->Render(m_D3D->GetDeviceContext(), to_render.GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, 
-								    m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), m_Camera->GetPosition(), 
+								    m_Light->GetPosition(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), m_Camera->GetPosition(), 
+									m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), to_render.GetTexture());
+
+	return result;
+}
+
+
+// |----------------------------------------------------------------------------|
+// |						    SunRender										|
+// |----------------------------------------------------------------------------|
+bool GraphicsClass::SunRender(ModelClass& to_render, D3DXMATRIX scale, 
+	D3DXMATRIX translate, D3DXMATRIX rotate)
+{
+	D3DXMATRIX scaleMatrix, translationMatrix, rotationMatrix;
+	bool result = true;
+
+	// Modify the world matrix as needed.
+	D3DXMatrixIdentity(&worldMatrix);
+	worldMatrix = scale * rotate * translate;
+	
+	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
+	to_render.Render(m_D3D->GetDeviceContext());
+	
+	// Render the model using the light shader.
+	result = m_LightShader->Render(m_D3D->GetDeviceContext(), to_render.GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, 
+								    m_Light->GetPosition(), D3DXVECTOR4(0.9f,0.9f,0.9f,1.0f), m_Light->GetDiffuseColor(), m_Camera->GetPosition(), 
 									m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), to_render.GetTexture());
 
 	return result;

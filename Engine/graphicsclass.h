@@ -72,6 +72,8 @@ private:
 	// Renders the passed in model using the given transforms
 	bool ModelRender(ModelClass& to_render, D3DXMATRIX scale, 
 		D3DXMATRIX translate, D3DXMATRIX rotate);
+	bool SunRender(ModelClass& to_render, D3DXMATRIX scale, 
+		D3DXMATRIX translate, D3DXMATRIX rotate);
 
 	// Renders the passed in bitmap using the given transforms
 	bool BitmapRender(BitmapClass& to_render, int x, int y);

@@ -31,16 +31,18 @@ public:
 	// Setter functions
 	void SetAmbientColor(float, float, float, float);
 	void SetDiffuseColor(float, float, float, float);
-	void SetDirection(float, float, float);
+	//void SetDirection(float, float, float);
+	void SetPosition(float, float, float);
 	void SetSpecularColor(float, float, float, float);
 	void SetSpecularPower(float);
 	
 	// Getter functions
 	D3DXVECTOR4 GetAmbientColor();
 	D3DXVECTOR4 GetDiffuseColor();
-	D3DXVECTOR3 GetDirection();
+	//D3DXVECTOR3 GetDirection();
 	D3DXVECTOR4 GetSpecularColor();
 	float GetSpecularPower();
+	D3DXVECTOR4 GetPosition();
 
 private:
 
@@ -52,7 +54,8 @@ private:
 	D3DXVECTOR4 m_specularColor;
 
 	// Direction (used for diffuse and specular)
-	D3DXVECTOR3 m_direction;
+	//D3DXVECTOR3 m_direction;
+	D3DXVECTOR4 m_position;
 
 	// Specular intensity
 	float m_specularPower;

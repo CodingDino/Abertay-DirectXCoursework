@@ -41,14 +41,20 @@ private:
 		float padding;
 	};
 
+	struct LightPositionBufferType
+	{
+		D3DXVECTOR4 lightPosition;
+	};
+
 	// Wraps lighting information to send to pixel shader
 	struct LightBufferType
 	{
 		D3DXVECTOR4 ambientColor;
 		D3DXVECTOR4 diffuseColor;
-		D3DXVECTOR3 lightDirection;
+		//D3DXVECTOR3 lightDirection;
 		float specularPower;
 		D3DXVECTOR4 specularColor;
+		D3DXVECTOR3 padding;
 	};
 
 public:
@@ -67,10 +73,11 @@ public:
 	void Shutdown();
 
 	// Renders the provided matrices to the DX device
-	bool Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, 
-					D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, D3DXVECTOR3 lightDirection, 
-					D3DXVECTOR4 ambientColor, D3DXVECTOR4 diffuseColor,  D3DXVECTOR3 cameraPosition, 
-					D3DXVECTOR4 specularColor, float specularPower, ID3D11ShaderResourceView* texture);
+	bool Render(ID3D11DeviceContext* deviceContext, int indexCount, 
+		D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, 
+		D3DXVECTOR4 lightPosition, D3DXVECTOR4 ambientColor, D3DXVECTOR4 diffuseColor, 
+		D3DXVECTOR3 cameraPosition, D3DXVECTOR4 specularColor, float specularPower, 
+		ID3D11ShaderResourceView* texture);
 private:
 
 	//|-------------------------------Private Functions-------------------------|
@@ -85,8 +92,11 @@ private:
 	void OutputShaderErrorMessage(ID3D10Blob*, HWND, WCHAR*);
 
 	// Passes information to shaders
-	bool SetShaderParameters(ID3D11DeviceContext*, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX, D3DXVECTOR3, D3DXVECTOR4, D3DXVECTOR4, 
-				  D3DXVECTOR3 cameraPosition, D3DXVECTOR4 specularColor, float specularPower, ID3D11ShaderResourceView*);
+	bool SetShaderParameters(ID3D11DeviceContext* deviceContext, 
+		D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, 
+		D3DXVECTOR4 lightPosition, D3DXVECTOR4 ambientColor,D3DXVECTOR4 diffuseColor, 
+		D3DXVECTOR3 cameraPosition, D3DXVECTOR4 specularColor, float specularPower, 
+		ID3D11ShaderResourceView* texture);
 
 	// Renders shader to device
 	void RenderShader(ID3D11DeviceContext*, int);
@@ -109,4 +119,5 @@ private:
 	ID3D11Buffer* m_matrixBuffer;
 	ID3D11Buffer* m_lightBuffer;
 	ID3D11Buffer* m_cameraBuffer;
+	ID3D11Buffer* m_lightPositionBuffer;
 };
