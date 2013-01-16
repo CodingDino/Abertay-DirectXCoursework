@@ -148,7 +148,7 @@ void PlanetClass::Render(ID3D11DeviceContext* deviceContext)
 // |----------------------------------------------------------------------------|
 // |						       GetModel										|
 // |----------------------------------------------------------------------------|
-void PlanetClass::GetModel(ModelClass* model)
+void PlanetClass::GetModel(ModelClass* &model)
 {
 	model = m_model;
 

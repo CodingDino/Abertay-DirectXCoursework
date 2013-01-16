@@ -24,7 +24,8 @@ GraphicsClass::GraphicsClass() :
 	m_Models(0),
 	crosshairs(0),
 	HUD(0),
-	m_Text(0)
+	m_Text(0),
+	m_sun(0)
 {
 }
 
@@ -119,6 +120,12 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		}
 	}
 
+	// Create and initialize planets
+	m_sun = new PlanetClass;
+	if(!m_sun) return false;
+	result = m_sun->Initialize(m_D3D->GetDevice(), "../Engine/data/sphere.txt", L"../Engine/data/star_sol.png",10.0f, 1.0f, Coord(0,0,0), 1.0f, 
+		0.0f, Coord(0,0,0), Coord(0,0,0));
+
 	// Create the shader objects.
 	m_LightShader = new LightShaderClass;
 	if(!m_LightShader)
@@ -211,6 +218,14 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 // |----------------------------------------------------------------------------|
 void GraphicsClass::Shutdown()
 {
+	// Release the planets.
+	if(m_sun)
+	{
+		m_sun->Shutdown();
+		delete m_sun;
+		m_sun = 0;
+	}
+
 	// Release the text object.
 	if(m_Text)
 	{
@@ -302,6 +317,9 @@ bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpu, float frameT
 
 	// Set the rotation of the camera.
 	m_Camera->SetRotation(camera_rotation.x, camera_rotation.y, camera_rotation.z);
+
+	// Update planets
+	m_sun->Frame(frameTime);
 	
 	// Render the graphics scene.
 	result = Render(mouseX, mouseY);
@@ -309,7 +327,6 @@ bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpu, float frameT
 	{
 		return false;
 	}
-
 
 	// Set the frames per second.
 	result = m_Text->SetFps(fps, m_D3D->GetDeviceContext());
@@ -386,6 +403,11 @@ bool GraphicsClass::Render(int mouseX, int mouseY)
 		}
 	}
 
+	// Render planets
+	ModelClass* planet_model(0);
+	m_sun->GetModel(planet_model);
+	result = result && ModelRender(*planet_model, m_sun->GetScale(), m_sun->GetTranslate(), m_sun->GetRotate());
+
 	// Turn off the Z buffer to begin all 2D rendering.
 	m_D3D->TurnZBufferOff();
 
@@ -455,7 +477,7 @@ bool GraphicsClass::EndRender()
 bool GraphicsClass::ModelRender(ModelClass& to_render, Coord scale, Coord translate, Coord rotate)
 {
 	D3DXMATRIX scaleMatrix, translationMatrix, rotationMatrix;
-	bool result;
+	bool result = true;
 
 	// Modify the world matrix as needed.
 	D3DXMatrixIdentity(&worldMatrix);

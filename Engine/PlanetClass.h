@@ -45,7 +45,7 @@ public:
 	void Render(ID3D11DeviceContext* deviceContext);
 
 	// Getter functions
-	void GetModel(ModelClass* model);
+	void GetModel(ModelClass* &model);
 	Coord GetScale();
 	Coord GetTranslate();
 	Coord GetRotate();

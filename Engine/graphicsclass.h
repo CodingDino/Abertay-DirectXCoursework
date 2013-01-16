@@ -12,7 +12,6 @@
 // |----------------------------------------------------------------------------|
 #include "d3dclass.h"
 #include "cameraclass.h"
-#include "modelclass.h"
 #include "lightshaderclass.h"
 #include "textureshaderclass.h"
 #include "lightclass.h"
@@ -20,6 +19,7 @@
 #include "Util.h"
 #include "BitmapClass.h"
 #include "textclass.h"
+#include "PlanetClass.h"
 
 
 // |----------------------------------------------------------------------------|
@@ -103,8 +103,11 @@ private:
 	BitmapClass* crosshairs;
 	BitmapClass* HUD;
 
-	// TODO: Make an array (if I want more than one)
+	// FPS output
 	TextClass* m_Text;
+
+	// Planets
+	PlanetClass* m_sun;
 
 	// Screen dimmensions
 	int m_screenWidth;
