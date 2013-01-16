@@ -21,11 +21,18 @@ GraphicsClass::GraphicsClass() :
 	m_LightShader(0),
 	m_TextureShader(0),
 	m_Light(0),
-	m_Models(0),
 	crosshairs(0),
 	HUD(0),
 	m_Text(0),
-	m_sun(0)
+	m_sun(0),
+	m_mercury(0),
+	m_venus(0),
+	m_earth(0),
+	m_mars(0),
+	m_saturn(0),
+	m_jupiter(0),
+	m_uranus(0),
+	m_neptune(0)
 {
 }
 
@@ -86,45 +93,134 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	// Set the initial position of the camera.
 	m_Camera->SetPosition(0.0f, 0.0f, -10.0f);
-	
-	// Create the model objects.
-	m_Models = new ModelClass*[NUM_MODELS];
-	for (int i=0; i<NUM_MODELS; ++i)
-	{
-		m_Models[i] = 0;
-	}
-	if(m_Models)
-	{
-		for (int i=0; i<NUM_MODELS; ++i)
-		{
-			m_Models[i] = new ModelClass;
-			if(!m_Models[i])
-			{
-				return false;
-			}	
-		}
-	}
-
-	// Initialize the model object.
-	debug("GraphicsClass: Initializing dynamic models...");
-	if(m_Models)
-	{
-		for (int i=0; i<NUM_MODELS; ++i)
-		{
-			result = m_Models[i]->Initialize(m_D3D->GetDevice(), "../Engine/data/sphere.txt", L"../Engine/data/earth02.jpg");
-			if(!result)
-			{
-				MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
-				return false;
-			}
-		}
-	}
 
 	// Create and initialize planets
+	// NOTE: Sun is scaled down to better show planets
+	// NOTE: Distance between planets scaled down drastically to better show them all
 	m_sun = new PlanetClass;
 	if(!m_sun) return false;
-	result = m_sun->Initialize(m_D3D->GetDevice(), "../Engine/data/sphere.txt", L"../Engine/data/star_sol.png",10.0f, 1.0f, Coord(0,0,0), 1.0f, 
-		0.0f, Coord(0,0,0), Coord(0,0,0));
+	result = m_sun->Initialize(m_D3D->GetDevice(), 
+		"../Engine/data/sphere.txt",		// Model
+		L"../Engine/data/star_sol.png",		// Texture
+		20.0f,								// Radius (compared to Earth)
+		0.04f,								// Rotation speed (rot/sec ~ rot/day)
+		7.25f,								// Axial tilt
+		0.0f,								// Orbital speed (orbit/sec ~ orbit/day)
+		0.0f,								// Orbital radius (in AU)
+		Coord(0,0,0),						// Orbit center
+		0.0f);								// Orbital tilt
+
+	m_mercury = new PlanetClass;
+	if(!m_mercury) return false;
+	result = m_mercury->Initialize(m_D3D->GetDevice(), 
+		"../Engine/data/sphere.txt",			// Model
+		L"../Engine/data/planet_mercury.png",	// Texture
+		0.38f,									// Radius (compared to Earth)
+		0.0171f,								// Rotation speed (rot/sec ~ rot/day)
+		2.11f,									// Axial tilt
+		0.0113f,								// Orbital speed (orbit/sec ~ orbit/day)
+		//0.467f,								// Orbital radius (in AU)
+		2.0f,									// Orbital radius (in AU)
+		Coord(0,0,0),							// Orbit center
+		7.0f);									// Orbital tilt
+
+	m_venus = new PlanetClass;
+	if(!m_venus) return false;
+	result = m_venus->Initialize(m_D3D->GetDevice(), 
+		"../Engine/data/sphere.txt",			// Model
+		L"../Engine/data/planet_venus.png",		// Texture
+		0.950f,									// Radius (compared to Earth)
+		0.00412f,								// Rotation speed (rot/day)
+		177.3f,									// Axial tilt
+		0.00444f,								// Orbital speed (orbit/day)
+		//0.723f,								// Orbital radius (in AU)
+		3.0f,									// Orbital radius (in AU)
+		Coord(0,0,0),							// Orbit center
+		3.39f);									// Orbital tilt
+
+	m_earth = new PlanetClass;
+	if(!m_earth) return false;
+	result = m_earth->Initialize(m_D3D->GetDevice(), 
+		"../Engine/data/sphere.txt",			// Model
+		L"../Engine/data/planet_earth.png",		// Texture
+		1.0f,									// Radius (compared to Earth)
+		1.0f,									// Rotation speed (rot/day)
+		23.0f,									// Axial tilt
+		0.00274f,								// Orbital speed (orbit/day)
+		//1.00f,									// Orbital radius (in AU)
+		4.0f,									// Orbital radius (in AU)
+		Coord(0,0,0),							// Orbit center
+		0.00f);									// Orbital tilt
+
+	m_mars = new PlanetClass;
+	if(!m_mars) return false;
+	result = m_mars->Initialize(m_D3D->GetDevice(), 
+		"../Engine/data/sphere.txt",			// Model
+		L"../Engine/data/planet_mars.png",		// Texture
+		0.533f,									// Radius (compared to Earth)
+		0.976f,									// Rotation speed (rot/day)
+		25.2f,									// Axial tilt
+		0.00146f,								// Orbital speed (orbit/day)
+		//1.52f,								// Orbital radius (in AU)
+		5.0f,									// Orbital radius (in AU)
+		Coord(0,0,0),							// Orbit center
+		1.85f);									// Orbital tilt
+
+	m_jupiter = new PlanetClass;
+	if(!m_jupiter) return false;
+	result = m_jupiter->Initialize(m_D3D->GetDevice(), 
+		"../Engine/data/sphere.txt",			// Model
+		L"../Engine/data/planet_jupiter.png",	// Texture
+		11.209f,								// Radius (compared to Earth)
+		2.418f,									// Rotation speed (rot/day)
+		3.13f,									// Axial tilt
+		0.0002308f,								// Orbital speed (orbit/day)
+		//5.204267f,							// Orbital radius (in AU)
+		7.0f,									// Orbital radius (in AU)
+		Coord(0,0,0),							// Orbit center
+		1.305f);								// Orbital tilt
+
+	m_saturn = new PlanetClass;
+	if(!m_saturn) return false;
+	result = m_saturn->Initialize(m_D3D->GetDevice(), 
+		"../Engine/data/sphere.txt",			// Model
+		L"../Engine/data/planet_saturn.png",	// Texture
+		9.4492f,								// Radius (compared to Earth)
+		0.426f,									// Rotation speed (rot/day)
+		26.73f,									// Axial tilt
+		0.0000929f,								// Orbital speed (orbit/day)
+		//9.582f,								// Orbital radius (in AU)
+		8.0f,									// Orbital radius (in AU)
+		Coord(0,0,0),							// Orbit center
+		2.485f);								// Orbital tilt
+
+	m_uranus = new PlanetClass;
+	if(!m_uranus) return false;
+	result = m_uranus->Initialize(m_D3D->GetDevice(), 
+		"../Engine/data/sphere.txt",			// Model
+		L"../Engine/data/planet_uranus.png",	// Texture
+		3.883f,									// Radius (compared to Earth)
+		1.39f,									// Rotation speed (rot/day)
+		97.77f,									// Axial tilt
+		0.0000325f,								// Orbital speed (orbit/day)
+		//19.229f,								// Orbital radius (in AU)
+		9.0f,									// Orbital radius (in AU)
+		Coord(0,0,0),							// Orbit center
+		0.772f);								// Orbital tilt
+
+	m_neptune = new PlanetClass;
+	if(!m_neptune) return false;
+	result = m_neptune->Initialize(m_D3D->GetDevice(), 
+		"../Engine/data/sphere.txt",			// Model
+		L"../Engine/data/planet_neptune.png",	// Texture
+		4.007f,									// Radius (compared to Earth)
+		1.4896f,								// Rotation speed (rot/day)
+		28.32f,									// Axial tilt
+		0.0000166f,								// Orbital speed (orbit/day)
+		//30.1f,								// Orbital radius (in AU)
+		10.0f,									// Orbital radius (in AU)
+		Coord(0,0,0),							// Orbit center
+		1.768f);								// Orbital tilt
 
 	// Create the shader objects.
 	m_LightShader = new LightShaderClass;
@@ -225,6 +321,54 @@ void GraphicsClass::Shutdown()
 		delete m_sun;
 		m_sun = 0;
 	}
+	if(m_mercury)
+	{
+		m_mercury->Shutdown();
+		delete m_mercury;
+		m_mercury = 0;
+	}
+	if(m_venus)
+	{
+		m_venus->Shutdown();
+		delete m_venus;
+		m_venus = 0;
+	}
+	if(m_earth)
+	{
+		m_earth->Shutdown();
+		delete m_earth;
+		m_earth = 0;
+	}
+	if(m_mars)
+	{
+		m_mars->Shutdown();
+		delete m_mars;
+		m_mars = 0;
+	}
+	if(m_jupiter)
+	{
+		m_jupiter->Shutdown();
+		delete m_jupiter;
+		m_jupiter = 0;
+	}
+	if(m_saturn)
+	{
+		m_saturn->Shutdown();
+		delete m_saturn;
+		m_saturn = 0;
+	}
+	if(m_uranus)
+	{
+		m_uranus->Shutdown();
+		delete m_uranus;
+		m_uranus = 0;
+	}
+	if(m_neptune)
+	{
+		m_neptune->Shutdown();
+		delete m_neptune;
+		m_neptune = 0;
+	}
 
 	// Release the text object.
 	if(m_Text)
@@ -269,22 +413,6 @@ void GraphicsClass::Shutdown()
 		m_TextureShader = 0;
 	}
 
-	// Release the model objects.
-	if(m_Models)
-	{
-		for (int i=0; i<NUM_MODELS; ++i)
-		{
-			if(m_Models[i])
-			{
-				m_Models[i]->Shutdown();
-				delete m_Models[i];
-				m_Models[i] = 0;
-			}
-		}
-		delete[] m_Models;
-		m_Models=0;
-	}
-
 	// Release the camera object.
 	if(m_Camera)
 	{
@@ -313,13 +441,21 @@ bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpu, float frameT
 	bool result;
 
 	// Set the position of the camera.
-	m_Camera->SetPosition(camera_position.x, camera_position.y, camera_position.z-10.0f);
+	m_Camera->SetPosition(camera_position.x, camera_position.y, camera_position.z-300.0f);
 
 	// Set the rotation of the camera.
 	m_Camera->SetRotation(camera_rotation.x, camera_rotation.y, camera_rotation.z);
 
 	// Update planets
 	m_sun->Frame(frameTime);
+	m_mercury->Frame(frameTime);
+	m_venus->Frame(frameTime);
+	m_earth->Frame(frameTime);
+	m_mars->Frame(frameTime);
+	m_jupiter->Frame(frameTime);
+	m_saturn->Frame(frameTime);
+	m_uranus->Frame(frameTime);
+	m_neptune->Frame(frameTime);
 	
 	// Render the graphics scene.
 	result = Render(mouseX, mouseY);
@@ -355,58 +491,46 @@ bool GraphicsClass::Render(int mouseX, int mouseY)
 	bool result;
 	static float rotation = 0.0f;
 
-	// Update the rotation variable each call.
-	// TODO: Remove (this is just for the rotation to start out)
-	rotation += (float)D3DX_PI * 0.01f;
-	if(rotation > 360.0f)
-	{
-		rotation -= 360.0f;
-	}
-
 	result = BeginRender();
-
-	// MODEL rendering
-	float scale(1), translate(0);
-	if(m_Models)
-	{
-		for (int i=0; i<NUM_MODELS; ++i)
-		{
-			if(m_Models[i])
-			{
-				result = result && ModelRender(*m_Models[i], Coord(scale,scale,scale), Coord(-6 + translate,0,0), Coord(0,rotation,0));
-				translate += 3;
-			}
-		}
-	}
-	translate = 0;
-	if(m_Models)
-	{
-		for (int i=0; i<NUM_MODELS; ++i)
-		{
-			if(m_Models[i])
-			{
-				result = result && ModelRender(*m_Models[i], Coord(scale,scale,scale), Coord(-6 + translate,3,0), Coord(0,rotation,0));
-				translate += 3;
-			}
-		}
-	}
-	translate = 0;
-	if(m_Models)
-	{
-		for (int i=0; i<NUM_MODELS; ++i)
-		{
-			if(m_Models[i])
-			{
-				result = result && ModelRender(*m_Models[i], Coord(scale,scale,scale), Coord(-6 + translate,-3,0), Coord(0,rotation,0));
-				translate += 3;
-			}
-		}
-	}
 
 	// Render planets
 	ModelClass* planet_model(0);
+
 	m_sun->GetModel(planet_model);
-	result = result && ModelRender(*planet_model, m_sun->GetScale(), m_sun->GetTranslate(), m_sun->GetRotate());
+	result = result && ModelRender(*planet_model, m_sun->GetScale(), m_sun->GetTranslate(), 
+		m_sun->GetRotate());
+	
+	m_mercury->GetModel(planet_model);
+	result = result && ModelRender(*planet_model, m_mercury->GetScale(), m_mercury->GetTranslate(), 
+		m_mercury->GetRotate());
+	
+	m_venus->GetModel(planet_model);
+	result = result && ModelRender(*planet_model, m_venus->GetScale(), m_venus->GetTranslate(), 
+		m_venus->GetRotate());
+	
+	m_earth->GetModel(planet_model);
+	result = result && ModelRender(*planet_model, m_earth->GetScale(), m_earth->GetTranslate(), 
+		m_earth->GetRotate());
+	
+	m_mars->GetModel(planet_model);
+	result = result && ModelRender(*planet_model, m_mars->GetScale(), m_mars->GetTranslate(), 
+		m_mars->GetRotate());
+	
+	m_jupiter->GetModel(planet_model);
+	result = result && ModelRender(*planet_model, m_jupiter->GetScale(), m_jupiter->GetTranslate(), 
+		m_jupiter->GetRotate());
+	
+	m_saturn->GetModel(planet_model);
+	result = result && ModelRender(*planet_model, m_saturn->GetScale(), m_saturn->GetTranslate(), 
+		m_saturn->GetRotate());
+	
+	m_uranus->GetModel(planet_model);
+	result = result && ModelRender(*planet_model, m_uranus->GetScale(), m_uranus->GetTranslate(), 
+		m_uranus->GetRotate());
+	
+	m_neptune->GetModel(planet_model);
+	result = result && ModelRender(*planet_model, m_neptune->GetScale(), m_neptune->GetTranslate(), 
+		m_neptune->GetRotate());
 
 	// Turn off the Z buffer to begin all 2D rendering.
 	m_D3D->TurnZBufferOff();
@@ -474,17 +598,15 @@ bool GraphicsClass::EndRender()
 // |----------------------------------------------------------------------------|
 // |						    ModelRender										|
 // |----------------------------------------------------------------------------|
-bool GraphicsClass::ModelRender(ModelClass& to_render, Coord scale, Coord translate, Coord rotate)
+bool GraphicsClass::ModelRender(ModelClass& to_render, D3DXMATRIX scale, 
+	D3DXMATRIX translate, D3DXMATRIX rotate)
 {
 	D3DXMATRIX scaleMatrix, translationMatrix, rotationMatrix;
 	bool result = true;
 
 	// Modify the world matrix as needed.
 	D3DXMatrixIdentity(&worldMatrix);
-	D3DXMatrixScaling(&scaleMatrix, scale.x, scale.y, scale.z);
-	D3DXMatrixTranslation(&translationMatrix, translate.x, translate.y, translate.z);
-	D3DXMatrixRotationYawPitchRoll(&rotationMatrix, rotate.y, rotate.x, rotate.z);
-	worldMatrix = scaleMatrix * rotationMatrix * translationMatrix;
+	worldMatrix = scale * rotate * translate;
 	
 	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	to_render.Render(m_D3D->GetDeviceContext());

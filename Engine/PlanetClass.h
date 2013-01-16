@@ -32,8 +32,8 @@ public:
 
 	// Initialize the model, reads in a vertex and texture file
 	bool Initialize(ID3D11Device* device, char* modelFilename, WCHAR* textureFilename,
-		float radius, float rotation_speed, Coord rotation_tilt, float orbit_speed, 
-		float orbit_radius, Coord orbit_center, Coord orbit_tilt);
+		float radius, float rotation_speed, float rotation_tilt, float orbit_speed, 
+		float orbit_radius, Coord orbit_center, float orbit_tilt);
 
 	// Releases data associated with the model
 	void Shutdown();
@@ -46,9 +46,9 @@ public:
 
 	// Getter functions
 	void GetModel(ModelClass* &model);
-	Coord GetScale();
-	Coord GetTranslate();
-	Coord GetRotate();
+	D3DXMATRIX GetScale();
+	D3DXMATRIX GetTranslate();
+	D3DXMATRIX GetRotate();
 
 private:
 
@@ -58,11 +58,11 @@ private:
 	// Planet constants
 	float m_radius;
 	float m_rotation_speed;
-	Coord m_rotation_tilt;
+	float m_rotation_tilt;
 	float m_orbit_speed;
 	float m_orbit_radius;
 	Coord m_orbit_center;
-	Coord m_orbit_tilt;
+	float m_orbit_tilt;
 
 	// Planet position
 	float m_rotation;

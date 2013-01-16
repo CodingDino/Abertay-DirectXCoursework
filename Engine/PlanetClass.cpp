@@ -21,11 +21,11 @@ PlanetClass::PlanetClass() :
 	m_model(0),
 	m_radius(0),
 	m_rotation_speed(0),
-	m_rotation_tilt(0,0,0),
+	m_rotation_tilt(0),
 	m_orbit_speed(0),
 	m_orbit_radius(0),
 	m_orbit_center(0,0,0),
-	m_orbit_tilt(0,0,0),
+	m_orbit_tilt(0),
 	m_rotation(0),
 	m_orbit(0)
 {
@@ -52,8 +52,8 @@ PlanetClass::~PlanetClass()
 // |						      Initialize									|
 // |----------------------------------------------------------------------------|
 bool PlanetClass::Initialize(ID3D11Device* device, char* modelFilename, WCHAR* textureFilename,
-		float radius, float rotation_speed, Coord rotation_tilt, float orbit_speed, 
-		float orbit_radius, Coord orbit_center, Coord orbit_tilt)
+		float radius, float rotation_speed, float rotation_tilt, float orbit_speed, 
+		float orbit_radius, Coord orbit_center, float orbit_tilt)
 {
 	// Create model
 	m_model = new ModelClass;
@@ -68,13 +68,13 @@ bool PlanetClass::Initialize(ID3D11Device* device, char* modelFilename, WCHAR* t
 	}
 
 	// Set planet constants
-	m_radius = radius;
-	m_rotation_speed = rotation_speed;
-	m_rotation_tilt = rotation_tilt;
-	m_orbit_speed = orbit_speed;
-	m_orbit_radius = orbit_radius;
-	m_orbit_center = orbit_center;
-	m_orbit_tilt = orbit_tilt;
+	m_radius =			radius			* 1;
+	m_rotation_speed =	rotation_speed	* 100;
+	m_rotation_tilt =	rotation_tilt	* 1;
+	m_orbit_speed =		orbit_speed		* 1000;
+	m_orbit_radius =	orbit_radius	* 30;
+	m_orbit_center =	orbit_center;
+	m_orbit_tilt =		orbit_tilt		* 1;
 
 	return true;
 }
@@ -105,7 +105,7 @@ void PlanetClass::Frame(float frameTime)
 {
 
 	// Apply rotation change
-	m_rotation += m_rotation_speed / frameTime;
+	m_rotation -= m_rotation_speed / frameTime;
 	if(m_rotation < 0.0f)
 	{
 		m_rotation += 360.0f;
@@ -116,7 +116,7 @@ void PlanetClass::Frame(float frameTime)
 	}
 
 	// Apply orbit change
-	m_orbit += m_orbit_speed / frameTime;
+	m_orbit -= m_orbit_speed / frameTime;
 	if(m_orbit < 0.0f)
 	{
 		m_orbit += 360.0f;
@@ -159,39 +159,58 @@ void PlanetClass::GetModel(ModelClass* &model)
 // |----------------------------------------------------------------------------|
 // |						       GetScale										|
 // |----------------------------------------------------------------------------|
-Coord PlanetClass::GetScale()
+D3DXMATRIX PlanetClass::GetScale()
 {
-	return Coord(m_radius,m_radius,m_radius);
+	D3DXMATRIX scaleMatrix;
+
+	D3DXMatrixScaling(&scaleMatrix, m_radius, m_radius, m_radius);
+
+	return scaleMatrix;
 }
 
 
 // |----------------------------------------------------------------------------|
 // |						      GetTranslate									|
 // |----------------------------------------------------------------------------|
-Coord PlanetClass::GetTranslate()
+D3DXMATRIX PlanetClass::GetTranslate()
 {
-	D3DXMATRIX worldMatrix, translationMatrix, rotationMatrix, tiltMatrix;
+	D3DXMATRIX worldMatrix, translationMatrix, orbitMatrix, tiltMatrix;
 
 	// Translate out to orbit radius
 	D3DXMatrixTranslation(&translationMatrix, m_orbit_radius, 0, 0);
 
 	// Determine point in orbit
-	D3DXMatrixRotationYawPitchRoll(&rotationMatrix, m_orbit, 0, 0);
+	D3DXMatrixRotationYawPitchRoll(&orbitMatrix, 0.01745f*m_orbit, 0, 0);
 
 	// Determine skew of orbit based on orbit rotation
-	D3DXMatrixRotationYawPitchRoll(&tiltMatrix, 0, m_orbit_tilt.x, m_orbit_tilt.z);
+	D3DXMatrixRotationYawPitchRoll(&tiltMatrix, 0, 0.01745f*m_orbit_tilt, 0);
 	
 	// Translate first, then rotate and skew
-	worldMatrix = translationMatrix * rotationMatrix * tiltMatrix;
+	worldMatrix = translationMatrix * orbitMatrix * tiltMatrix;
 
-	return Coord(worldMatrix._41,worldMatrix._42,worldMatrix._43);
+	return worldMatrix;
 }
 
 
 // |----------------------------------------------------------------------------|
 // |						       GetRotate									|
 // |----------------------------------------------------------------------------|
-Coord PlanetClass::GetRotate()
+D3DXMATRIX PlanetClass::GetRotate()
 {
-	return Coord(m_rotation_tilt.x,m_rotation,m_rotation_tilt.z);
+	D3DXMATRIX worldMatrix, orbitMatrix, rotationMatrix, tiltMatrix;
+
+	// Determine point in rotation
+	D3DXMatrixRotationYawPitchRoll(&rotationMatrix, 0.01745f*m_rotation, 0, 0);
+
+	// Determine tilt
+	D3DXMatrixRotationYawPitchRoll(&tiltMatrix, 0, 0, 0.01745f*m_rotation_tilt);
+
+	// Determine point in orbit
+	// Actually I don't think this is a thing
+	D3DXMatrixRotationYawPitchRoll(&orbitMatrix, 0.01745f*-1*m_orbit, 0, 0);
+
+	// Translate first, then rotate and skew
+	worldMatrix = rotationMatrix * tiltMatrix;
+
+	return worldMatrix;
 }

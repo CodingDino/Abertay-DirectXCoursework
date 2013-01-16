@@ -70,7 +70,8 @@ private:
 	bool EndRender();
 
 	// Renders the passed in model using the given transforms
-	bool ModelRender(ModelClass& to_render, Coord scale, Coord translate, Coord rotate);
+	bool ModelRender(ModelClass& to_render, D3DXMATRIX scale, 
+		D3DXMATRIX translate, D3DXMATRIX rotate);
 
 	// Renders the passed in bitmap using the given transforms
 	bool BitmapRender(BitmapClass& to_render, int x, int y);
@@ -89,12 +90,8 @@ private:
 	LightShaderClass* m_LightShader;
 	TextureShaderClass* m_TextureShader;
 
-	// Light source 
-	// TODO: make an array of light sources, lights should be placeable in the scene
+	// Light source
 	LightClass* m_Light;
-
-	// Models
-	ModelClass** m_Models;
 
 	// Matrices
 	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix, baseViewMatrix;
@@ -108,6 +105,14 @@ private:
 
 	// Planets
 	PlanetClass* m_sun;
+	PlanetClass* m_mercury;
+	PlanetClass* m_venus;
+	PlanetClass* m_earth;
+	PlanetClass* m_mars;
+	PlanetClass* m_jupiter;
+	PlanetClass* m_saturn;
+	PlanetClass* m_uranus;
+	PlanetClass* m_neptune;
 
 	// Screen dimmensions
 	int m_screenWidth;
