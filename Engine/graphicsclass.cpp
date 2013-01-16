@@ -32,7 +32,8 @@ GraphicsClass::GraphicsClass() :
 	m_saturn(0),
 	m_jupiter(0),
 	m_uranus(0),
-	m_neptune(0)
+	m_neptune(0),
+	m_skybox(0)
 {
 }
 
@@ -222,6 +223,12 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		Coord(0,0,0),							// Orbit center
 		1.768f);								// Orbital tilt
 
+	m_skybox = new ModelClass;
+	if(!m_skybox) return false;
+	result = m_skybox->Initialize(m_D3D->GetDevice(), 
+		"../Engine/data/cube.txt",			
+		L"../Engine/data/starfield06.png");
+
 	// Create the shader objects.
 	m_LightShader = new LightShaderClass;
 	if(!m_LightShader)
@@ -371,6 +378,14 @@ void GraphicsClass::Shutdown()
 		m_neptune = 0;
 	}
 
+	// Release skybox
+	if(m_skybox)
+	{
+		m_skybox->Shutdown();
+		delete m_skybox;
+		m_skybox = 0;
+	}
+
 	// Release the text object.
 	if(m_Text)
 	{
@@ -459,7 +474,7 @@ bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpu, float frameT
 	m_neptune->Frame(frameTime);
 	
 	// Render the graphics scene.
-	result = Render(mouseX, mouseY);
+	result = Render(mouseX, mouseY, camera_position);
 	if(!result)
 	{
 		return false;
@@ -487,12 +502,26 @@ bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpu, float frameT
 // |----------------------------------------------------------------------------|
 // |						      Render										|
 // |----------------------------------------------------------------------------|
-bool GraphicsClass::Render(int mouseX, int mouseY)
+bool GraphicsClass::Render(int mouseX, int mouseY, Coord camera_position)
 {
 	bool result;
 	static float rotation = 0.0f;
 
 	result = BeginRender();
+
+	// Turn off the Z buffer and culling for skybox
+	m_D3D->TurnZBufferOff();
+	m_D3D->TurnOffBackCulling();
+
+	// Skybox rendering
+	D3DXMATRIX ident, translationMatrix;
+	D3DXMatrixIdentity(&ident);
+	D3DXMatrixTranslation(&translationMatrix, camera_position.x, camera_position.y, camera_position.z-300);
+	result = result && SunRender(*m_skybox, ident, translationMatrix, ident);
+
+	// Turn the Z buffer and back culling on now that skybox is rendered.
+	m_D3D->TurnZBufferOn();
+	m_D3D->TurnOnBackCulling();
 
 	// Render planets
 	ModelClass* planet_model(0);
@@ -639,7 +668,7 @@ bool GraphicsClass::SunRender(ModelClass& to_render, D3DXMATRIX scale,
 	
 	// Render the model using the light shader.
 	result = m_LightShader->Render(m_D3D->GetDeviceContext(), to_render.GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, 
-								    m_Light->GetPosition(), D3DXVECTOR4(0.9f,0.9f,0.9f,1.0f), m_Light->GetDiffuseColor(), m_Camera->GetPosition(), 
+								    m_Light->GetPosition(), D3DXVECTOR4(0.99f,0.99f,0.99f,1.0f), m_Light->GetDiffuseColor(), m_Camera->GetPosition(), 
 									m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), to_render.GetTexture());
 
 	return result;

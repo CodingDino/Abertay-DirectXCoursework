@@ -68,6 +68,10 @@ public:
 	void TurnOnAlphaBlending();
 	void TurnOffAlphaBlending();
 
+	// Culling modification
+	void TurnOnBackCulling();
+	void TurnOffBackCulling();
+
 private:
 
 	//|-----------------------------Private Data Members------------------------|
@@ -88,9 +92,11 @@ private:
 	ID3D11DepthStencilState* m_depthStencilState;
 	ID3D11DepthStencilView* m_depthStencilView;
 	ID3D11RasterizerState* m_rasterState;
+	ID3D11RasterizerState* m_cullingDisabledRasterState;
 	ID3D11DepthStencilState* m_depthDisabledStencilState;
 	ID3D11BlendState* m_alphaEnableBlendingState;
 	ID3D11BlendState* m_alphaDisableBlendingState;
+
 
 	// Matrices
 	D3DXMATRIX m_projectionMatrix;

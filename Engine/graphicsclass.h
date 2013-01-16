@@ -61,7 +61,7 @@ private:
 
 	// Calls render functions in order
 	// TODO: Merge this with Frame(), maybe?
-	bool Render(int mouseX, int mouseY);
+	bool Render(int mouseX, int mouseY, Coord camera_position);
 
 	// Rendering setup (starts scene, gets world, view, and projection matrix)
 	bool BeginRender();
@@ -115,6 +115,9 @@ private:
 	PlanetClass* m_saturn;
 	PlanetClass* m_uranus;
 	PlanetClass* m_neptune;
+
+	// Skubox
+	ModelClass* m_skybox;
 
 	// Screen dimmensions
 	int m_screenWidth;

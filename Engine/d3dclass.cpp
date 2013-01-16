@@ -26,7 +26,8 @@ D3DClass::D3DClass() :
 	m_rasterState(0),
 	m_depthDisabledStencilState(0),
 	m_alphaEnableBlendingState(0),
-	m_alphaDisableBlendingState(0)
+	m_alphaDisableBlendingState(0),
+	m_cullingDisabledRasterState(0)
 {
 }
 
@@ -68,6 +69,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
 	D3D11_RASTERIZER_DESC rasterDesc;
+	D3D11_RASTERIZER_DESC rasterDescCullingDisabled;
 	D3D11_VIEWPORT viewport;
 	float fieldOfView, screenAspect;
 	D3D11_DEPTH_STENCIL_DESC depthDisabledStencilDesc;
@@ -345,6 +347,25 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 
 	// Now set the rasterizer state.
 	m_deviceContext->RSSetState(m_rasterState);
+
+	// Setup the raster description which will determine how and what polygons will be drawn.
+	rasterDescCullingDisabled.AntialiasedLineEnable = false;
+	rasterDescCullingDisabled.CullMode = D3D11_CULL_NONE;
+	rasterDescCullingDisabled.DepthBias = 0;
+	rasterDescCullingDisabled.DepthBiasClamp = 0.0f;
+	rasterDescCullingDisabled.DepthClipEnable = true;
+	rasterDescCullingDisabled.FillMode = D3D11_FILL_SOLID;
+	rasterDescCullingDisabled.FrontCounterClockwise = false;
+	rasterDescCullingDisabled.MultisampleEnable = false;
+	rasterDescCullingDisabled.ScissorEnable = false;
+	rasterDescCullingDisabled.SlopeScaledDepthBias = 0.0f;
+
+	// Create the rasterizer state from the description we just filled out.
+	result = m_device->CreateRasterizerState(&rasterDescCullingDisabled, &m_cullingDisabledRasterState);
+	if(FAILED(result))
+	{
+		return false;
+	}
 	
 	// Setup the viewport for rendering.
     viewport.Width = (float)screenWidth;
@@ -678,5 +699,25 @@ void D3DClass::TurnOffAlphaBlending()
 	// Turn off the alpha blending.
 	m_deviceContext->OMSetBlendState(m_alphaDisableBlendingState, blendFactor, 0xffffffff);
 
+	return;
+}
+
+
+// |----------------------------------------------------------------------------|
+// |						    TurnOnBackCulling									|
+// |----------------------------------------------------------------------------|
+void D3DClass::TurnOnBackCulling()
+{
+	m_deviceContext->RSSetState(m_rasterState);
+	return;
+}
+
+
+// |----------------------------------------------------------------------------|
+// |						    TurnOffBackCulling									|
+// |----------------------------------------------------------------------------|
+void D3DClass::TurnOffBackCulling()
+{
+	m_deviceContext->RSSetState(m_cullingDisabledRasterState);
 	return;
 }

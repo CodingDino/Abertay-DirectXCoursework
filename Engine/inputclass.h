@@ -64,6 +64,7 @@ public:
 	bool IsEPressed();
 	bool IsSpacePressed();
 	bool IsLeftControlPressed();
+	bool IsMPressed();
 
 	// Gets mouse position
 	void GetMouseLocation(int& mouseX, int& mouseY);

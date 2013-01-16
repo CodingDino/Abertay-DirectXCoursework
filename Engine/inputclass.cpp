@@ -442,6 +442,20 @@ bool InputClass::IsLeftControlPressed()
 
 
 // |----------------------------------------------------------------------------|
+// |								    IsMPressed								|
+// |----------------------------------------------------------------------------|
+bool InputClass::IsMPressed()
+{
+	if(m_keyboardState[DIK_M] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+
+// |----------------------------------------------------------------------------|
 // |						   GetMouseLocation									|
 // |----------------------------------------------------------------------------|
 void InputClass::GetMouseLocation(int& mouseX, int& mouseY)
