@@ -50,11 +50,20 @@ public:
 	// Gets input and processes it
 	bool Frame();
 
-	// Checks if the escape button is pressed
+	// Key press checks
 	bool IsEscapePressed();
-
-	// Checks if the forward button is pressed
-	bool IsForwardPressed();
+	bool IsLeftArrowPressed();
+	bool IsRightArrowPressed();
+	bool IsUpArrowPressed();
+	bool IsDownArrowPressed();
+	bool IsWPressed();
+	bool IsAPressed();
+	bool IsSPressed();
+	bool IsDPressed();
+	bool IsQPressed();
+	bool IsEPressed();
+	bool IsSpacePressed();
+	bool IsLeftControlPressed();
 
 	// Gets mouse position
 	void GetMouseLocation(int& mouseX, int& mouseY);

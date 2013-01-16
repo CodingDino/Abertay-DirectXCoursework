@@ -274,13 +274,165 @@ bool InputClass::IsEscapePressed()
 
 
 // |----------------------------------------------------------------------------|
-// |						   IsForwardPressed									|
+// |						   IsLeftArrowPressed								|
 // |----------------------------------------------------------------------------|
-bool InputClass::IsForwardPressed()
+bool InputClass::IsLeftArrowPressed()
 {
-	// Do a bitwise and on the keyboard state to check if the escape key is currently being pressed.
-	// TODO: Correct key state index
-	if(m_keyboardState[DIK_ESCAPE] & 0x80)
+	if(m_keyboardState[DIK_LEFT] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+
+// |----------------------------------------------------------------------------|
+// |						   IsRightArrowPressed								|
+// |----------------------------------------------------------------------------|
+bool InputClass::IsRightArrowPressed()
+{
+	if(m_keyboardState[DIK_RIGHT] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+
+// |----------------------------------------------------------------------------|
+// |						    IsUpArrowPressed								|
+// |----------------------------------------------------------------------------|
+bool InputClass::IsUpArrowPressed()
+{
+	if(m_keyboardState[DIK_UP] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+
+// |----------------------------------------------------------------------------|
+// |						    IsDownArrowPressed								|
+// |----------------------------------------------------------------------------|
+bool InputClass::IsDownArrowPressed()
+{
+	if(m_keyboardState[DIK_DOWN] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+
+// |----------------------------------------------------------------------------|
+// |								IsWPressed									|
+// |----------------------------------------------------------------------------|
+bool InputClass::IsWPressed()
+{
+	if(m_keyboardState[DIK_W] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+
+// |----------------------------------------------------------------------------|
+// |								IsAPressed									|
+// |----------------------------------------------------------------------------|
+bool InputClass::IsAPressed()
+{
+	if(m_keyboardState[DIK_A] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+
+// |----------------------------------------------------------------------------|
+// |								IsSPressed									|
+// |----------------------------------------------------------------------------|
+bool InputClass::IsSPressed()
+{
+	if(m_keyboardState[DIK_S] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+
+// |----------------------------------------------------------------------------|
+// |								IsDPressed									|
+// |----------------------------------------------------------------------------|
+bool InputClass::IsDPressed()
+{
+	if(m_keyboardState[DIK_D] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+
+// |----------------------------------------------------------------------------|
+// |								IsQPressed									|
+// |----------------------------------------------------------------------------|
+bool InputClass::IsQPressed()
+{
+	if(m_keyboardState[DIK_Q] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+
+// |----------------------------------------------------------------------------|
+// |								IsEPressed									|
+// |----------------------------------------------------------------------------|
+bool InputClass::IsEPressed()
+{
+	if(m_keyboardState[DIK_E] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+
+// |----------------------------------------------------------------------------|
+// |							   IsSpacePressed								|
+// |----------------------------------------------------------------------------|
+bool InputClass::IsSpacePressed()
+{
+	if(m_keyboardState[DIK_SPACE] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+
+// |----------------------------------------------------------------------------|
+// |						      IsLeftControlPressed							|
+// |----------------------------------------------------------------------------|
+bool InputClass::IsLeftControlPressed()
+{
+	if(m_keyboardState[DIK_LCONTROL] & 0x80)
 	{
 		return true;
 	}

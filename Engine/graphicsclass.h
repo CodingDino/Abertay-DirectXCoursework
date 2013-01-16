@@ -53,8 +53,7 @@ public:
 	void Shutdown();
 
 	// Frame-by-frame graphics processing
-	// TODO: pass in array of game objects to be rendered (or have game object render itself????)
-	bool Frame(int, int);
+	bool Frame(int mouseX, int mouseY, int fps, int cpu, float frameTime, Coord camera_rotation, Coord camera_position);
 
 private:
 
@@ -100,8 +99,9 @@ private:
 	// Matrices
 	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix, baseViewMatrix;
 
-	// TODO: Make an array (if I want more than one)
-	BitmapClass* m_Bitmap;
+	// 2D Bitmaps
+	BitmapClass* crosshairs;
+	BitmapClass* HUD;
 
 	// TODO: Make an array (if I want more than one)
 	TextClass* m_Text;

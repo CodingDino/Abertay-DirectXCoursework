@@ -19,7 +19,10 @@
 #include <windows.h>
 #include "inputclass.h"
 #include "graphicsclass.h"
-#include "gameclass.h"
+#include "fpsclass.h"
+#include "cpuclass.h"
+#include "timerclass.h"
+#include "positionclass.h"
 
 
 // |----------------------------------------------------------------------------|
@@ -72,10 +75,15 @@ private:
 	InputClass* m_Input;
 
 	// Graphics handler
-	GraphicsClass* m_Graphics;
+	GraphicsClass* m_Graphics;	
+	
+	// Timing classes
+	FpsClass* m_Fps;
+	CpuClass* m_Cpu;
+	TimerClass* m_Timer;
 
-	// Game logic handler
-	GameClass* m_Game;
+	// Player position
+	PositionClass* m_Position;
 };
 
 

@@ -22,7 +22,8 @@ GraphicsClass::GraphicsClass() :
 	m_TextureShader(0),
 	m_Light(0),
 	m_Models(0),
-	m_Bitmap(0),
+	crosshairs(0),
+	HUD(0),
 	m_Text(0)
 {
 }
@@ -109,7 +110,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	{
 		for (int i=0; i<NUM_MODELS; ++i)
 		{
-			result = m_Models[i]->Initialize(m_D3D->GetDevice(), "../Engine/data/sphere.txt", L"../Engine/data/seafloor.dds");
+			result = m_Models[i]->Initialize(m_D3D->GetDevice(), "../Engine/data/sphere.txt", L"../Engine/data/earth02.jpg");
 			if(!result)
 			{
 				MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
@@ -154,23 +155,34 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	// Initialize the light object.
 	m_Light->SetAmbientColor(0.05f, 0.05f, 0.05f, 1.0f);
-	m_Light->SetDiffuseColor(0.0f, 1.0f, 0.0f, 1.0f);
+	m_Light->SetDiffuseColor(1.0f, 1.0f, 0.75f, 1.0f);
 	m_Light->SetDirection(1.0f, -1.0f, 1.0f);
 	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetSpecularPower(16.0f);
 
-	// Create the bitmap object.
-	m_Bitmap = new BitmapClass;
-	if(!m_Bitmap)
+	// Create the bitmap objects.
+	crosshairs = new BitmapClass;
+	if(!crosshairs)
+	{
+		return false;
+	}
+	HUD = new BitmapClass;
+	if(!HUD)
 	{
 		return false;
 	}
 
-	// Initialize the bitmap object.
-	result = m_Bitmap->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, L"../Engine/data/crosshair.png", 60, 50);
+	// Initialize the bitmap objects.
+	result = crosshairs->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, L"../Engine/data/crosshair.png", 60, 50);
 	if(!result)
 	{
-		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
+		MessageBox(hwnd, L"Could not initialize the crosshairs object.", L"Error", MB_OK);
+		return false;
+	}
+	result = HUD->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, L"../Engine/data/hud02.png", screenWidth, screenHeight);
+	if(!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the HUD object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -207,12 +219,18 @@ void GraphicsClass::Shutdown()
 		m_Text = 0;
 	}
 
-	// Release the bitmap object.
-	if(m_Bitmap)
+	// Release the bitmap objects.
+	if(crosshairs)
 	{
-		m_Bitmap->Shutdown();
-		delete m_Bitmap;
-		m_Bitmap = 0;
+		crosshairs->Shutdown();
+		delete crosshairs;
+		crosshairs = 0;
+	}
+	if(HUD)
+	{
+		HUD->Shutdown();
+		delete HUD;
+		HUD = 0;
 	}
 
 	// Release the light object.
@@ -274,9 +292,16 @@ void GraphicsClass::Shutdown()
 // |----------------------------------------------------------------------------|
 // |						       Frame										|
 // |----------------------------------------------------------------------------|
-bool GraphicsClass::Frame(int mouseX, int mouseY)
+bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpu, float frameTime,
+	Coord camera_rotation, Coord camera_position)
 {
 	bool result;
+
+	// Set the position of the camera.
+	m_Camera->SetPosition(camera_position.x, camera_position.y, camera_position.z-10.0f);
+
+	// Set the rotation of the camera.
+	m_Camera->SetRotation(camera_rotation.x, camera_rotation.y, camera_rotation.z);
 	
 	// Render the graphics scene.
 	result = Render(mouseX, mouseY);
@@ -285,12 +310,21 @@ bool GraphicsClass::Frame(int mouseX, int mouseY)
 		return false;
 	}
 
-	// Set the location of the mouse.
-	result = m_Text->SetMousePosition(mouseX, mouseY, m_D3D->GetDeviceContext());
+
+	// Set the frames per second.
+	result = m_Text->SetFps(fps, m_D3D->GetDeviceContext());
 	if(!result)
 	{
 		return false;
 	}
+
+	// Set the cpu usage.
+	result = m_Text->SetCpu(cpu, m_D3D->GetDeviceContext());
+	if(!result)
+	{
+		return false;
+	}
+
 
 	return true;
 }
@@ -359,7 +393,8 @@ bool GraphicsClass::Render(int mouseX, int mouseY)
 	m_D3D->TurnOnAlphaBlending();
 
 	// BITMAP rendering
-	result = result && BitmapRender(*m_Bitmap, mouseX-30, mouseY-25);
+	result = result && BitmapRender(*crosshairs, mouseX-30, mouseY-25);
+	result = result && BitmapRender(*HUD, 0, 0);
 
 	// TEXT rendering
 	result = m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
@@ -453,14 +488,14 @@ bool GraphicsClass::BitmapRender(BitmapClass& to_render, int x, int y)
 	D3DXMatrixIdentity(&worldMatrix);
 	
 	// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	result = m_Bitmap->Render(m_D3D->GetDeviceContext(), x, y);
+	result = to_render.Render(m_D3D->GetDeviceContext(), x, y);
 	if(!result)
 	{
 		return false;
 	}
 	// Render the bitmap with the texture shader.
-	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Bitmap->GetIndexCount(), 
-		worldMatrix, baseViewMatrix, orthoMatrix, m_Bitmap->GetTexture());
+	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), to_render.GetIndexCount(), 
+		worldMatrix, baseViewMatrix, orthoMatrix, to_render.GetTexture());
 	if(!result)
 	{
 		return false;

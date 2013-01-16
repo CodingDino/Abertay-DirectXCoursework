@@ -18,7 +18,10 @@
 SystemClass::SystemClass() :
 	m_Input(0),
 	m_Graphics(0),
-	m_Game(0)
+	m_Fps(0),
+	m_Cpu(0),
+	m_Timer(0),
+	m_Position(0)
 {
 }
 
@@ -69,8 +72,6 @@ bool SystemClass::Initialize()
 		MessageBox(m_hwnd, L"Could not initialize the input object.", L"Error", MB_OK);
 		return false;
 	}
- 
-
 
 	// Create the graphics object.  This object will handle rendering all the graphics for this application.
 	m_Graphics = new GraphicsClass;
@@ -86,20 +87,47 @@ bool SystemClass::Initialize()
 		return false;
 	}
 
-	// Create game object which will control physics and logic of game objects
-	m_Game = new GameClass;
-	if(!m_Game)
+	// Create the fps object.
+	m_Fps = new FpsClass;
+	if(!m_Fps)
 	{
 		return false;
 	}
 
-	// Initialize the game object.
-	result = m_Game->Initialize();
+	// Initialize the fps object.
+	m_Fps->Initialize();
+
+	// Create the cpu object.
+	m_Cpu = new CpuClass;
+	if(!m_Cpu)
+	{
+		return false;
+	}
+
+	// Initialize the cpu object.
+	m_Cpu->Initialize();
+
+	// Create the timer object.
+	m_Timer = new TimerClass;
+	if(!m_Timer)
+	{
+		return false;
+	}
+
+	// Initialize the timer object.
+	result = m_Timer->Initialize();
 	if(!result)
 	{
+		MessageBox(m_hwnd, L"Could not initialize the Timer object.", L"Error", MB_OK);
 		return false;
 	}
 
+	// Create the position object.
+	m_Position = new PositionClass;
+	if(!m_Position)
+	{
+		return false;
+	}
 	
 	return true;
 }
@@ -110,6 +138,35 @@ bool SystemClass::Initialize()
 // |----------------------------------------------------------------------------|
 void SystemClass::Shutdown()
 {
+	// Release the position object.
+	if(m_Position)
+	{
+		delete m_Position;
+		m_Position = 0;
+	}
+
+	// Release the timer object.
+	if(m_Timer)
+	{
+		delete m_Timer;
+		m_Timer = 0;
+	}
+
+	// Release the cpu object.
+	if(m_Cpu)
+	{
+		m_Cpu->Shutdown();
+		delete m_Cpu;
+		m_Cpu = 0;
+	}
+
+	// Release the fps object.
+	if(m_Fps)
+	{
+		delete m_Fps;
+		m_Fps = 0;
+	}
+
 	// Release the graphics object.
 	if(m_Graphics)
 	{
@@ -124,14 +181,6 @@ void SystemClass::Shutdown()
 		m_Input->Shutdown();
 		delete m_Input;
 		m_Input = 0;
-	}
-
-	// Release the game object.
-	if(m_Game)
-	{
-		m_Game->Shutdown();
-		delete m_Game;
-		m_Game = 0;
 	}
 
 	// Shutdown the window.
@@ -198,6 +247,9 @@ bool SystemClass::Frame()
 {
 	bool result;
 	int mouseX, mouseY;
+	bool keyDown;
+	Coord camera_position;
+	Coord camera_rotation;
 
 	// Do the input processing.
 	result = m_Input->Frame();
@@ -206,18 +258,62 @@ bool SystemClass::Frame()
 		return false;
 	}
 
-	// Do the game logic processing
-	result = m_Game->Frame();
-	if(!result)
-	{
-		return false;
-	}
+	// Set the frame time for calculating the updated position.
+	m_Position->SetFrameTime(m_Timer->GetTime());
+
+	// Use the input to determine camera position.
+	// Rotate left
+	keyDown = m_Input->IsAPressed();
+	m_Position->TurnLeft(keyDown);
+	// Rotate right
+	keyDown = m_Input->IsDPressed();
+	m_Position->TurnRight(keyDown);
+	// Rotate up
+	keyDown = m_Input->IsWPressed();
+	m_Position->TurnUp(keyDown);
+	// Rotate down
+	keyDown = m_Input->IsSPressed();
+	m_Position->TurnDown(keyDown);
+	// Roll left
+	keyDown = m_Input->IsQPressed();
+	m_Position->RollLeft(keyDown);
+	// Roll right
+	keyDown = m_Input->IsEPressed();
+	m_Position->RollRight(keyDown);
+	// Move left
+	keyDown = m_Input->IsLeftArrowPressed();
+	m_Position->MoveLeft(keyDown);
+	// Move right
+	keyDown = m_Input->IsRightArrowPressed();
+	m_Position->MoveRight(keyDown);
+	// Move forward
+	keyDown = m_Input->IsUpArrowPressed();
+	m_Position->MoveForward(keyDown);
+	// Move backwards
+	keyDown = m_Input->IsDownArrowPressed();
+	m_Position->MoveBackward(keyDown);
+	// Move up
+	keyDown = m_Input->IsSpacePressed();
+	m_Position->MoveUp(keyDown);
+	// Move down
+	keyDown = m_Input->IsLeftControlPressed();
+	m_Position->MoveDown(keyDown);
+
+	// Get coordinates and rotation from position object
+	m_Position->GetRotation(camera_rotation.x, camera_rotation.y, camera_rotation.z);
+	m_Position->GetPosition(camera_position.x, camera_position.y, camera_position.z);
 
 	// Get the location of the mouse from the input object,
 	m_Input->GetMouseLocation(mouseX, mouseY);
 
+	// Update the system timers.
+	m_Timer->Frame();
+	m_Fps->Frame();
+	m_Cpu->Frame();
+
 	// Do the frame processing for the graphics object.
-	result = m_Graphics->Frame(mouseX, mouseY);
+	result = m_Graphics->Frame(mouseX, mouseY, m_Fps->GetFps(), 
+		m_Cpu->GetCpuPercentage(), m_Timer->GetTime(), camera_rotation, camera_position);
 	if(!result)
 	{
 		return false;
