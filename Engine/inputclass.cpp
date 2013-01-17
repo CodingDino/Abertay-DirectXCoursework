@@ -454,6 +454,34 @@ bool InputClass::IsMPressed()
 	return false;
 }
 
+// |----------------------------------------------------------------------------|
+// |								    IsMPressed								|
+// |----------------------------------------------------------------------------|
+bool InputClass::IsNPressed()
+{
+	if(m_keyboardState[DIK_N] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+
+// |----------------------------------------------------------------------------|
+// |								 IsMovementPressed							|
+// |----------------------------------------------------------------------------|
+bool InputClass::IsMovementPressed()
+{
+	if( IsLeftArrowPressed() || IsRightArrowPressed() || IsUpArrowPressed() || 
+		IsDownArrowPressed() || IsSpacePressed() || IsLeftControlPressed() )
+	{
+		return true;
+	}
+
+	return false;
+}
+
 
 // |----------------------------------------------------------------------------|
 // |						   GetMouseLocation									|

@@ -21,7 +21,8 @@ SystemClass::SystemClass() :
 	m_Fps(0),
 	m_Cpu(0),
 	m_Timer(0),
-	m_Position(0)
+	m_Position(0),
+	m_Sound(0)
 {
 }
 
@@ -128,6 +129,21 @@ bool SystemClass::Initialize()
 	{
 		return false;
 	}
+
+	// Create the sound object.
+	m_Sound = new SoundClass;
+	if(!m_Sound)
+	{
+		return false;
+	}
+ 
+	// Initialize the sound object.
+	result = m_Sound->Initialize(m_hwnd);
+	if(!result)
+	{
+		MessageBox(m_hwnd, L"Could not initialize Direct Sound.", L"Error", MB_OK);
+		return false;
+	}
 	
 	return true;
 }
@@ -181,6 +197,14 @@ void SystemClass::Shutdown()
 		m_Input->Shutdown();
 		delete m_Input;
 		m_Input = 0;
+	}
+
+	// Release the sound object.
+	if(m_Sound)
+	{
+		m_Sound->Shutdown();
+		delete m_Sound;
+		m_Sound = 0;
 	}
 
 	// Shutdown the window.
@@ -298,6 +322,13 @@ bool SystemClass::Frame()
 	// Move down
 	keyDown = m_Input->IsLeftControlPressed();
 	m_Position->MoveDown(keyDown);
+
+	// Sound effect
+	if (m_Input->IsMPressed()) m_Sound->Mute();
+	if (m_Input->IsNPressed()) m_Sound->UnMute();
+	if (m_Input->IsMovementPressed()) m_Sound->StartShipEngine();
+	else  m_Sound->StopShipEngine();
+	m_Sound->Frame(m_Timer->GetTime());
 
 	// Get coordinates and rotation from position object
 	m_Position->GetRotation(camera_rotation.x, camera_rotation.y, camera_rotation.z);

@@ -23,6 +23,7 @@
 #include "cpuclass.h"
 #include "timerclass.h"
 #include "positionclass.h"
+#include "soundclass.h"
 
 
 // |----------------------------------------------------------------------------|
@@ -84,6 +85,9 @@ private:
 
 	// Player position
 	PositionClass* m_Position;
+
+	// Sound
+	SoundClass* m_Sound;
 };
 
 
