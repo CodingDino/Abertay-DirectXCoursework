@@ -144,6 +144,7 @@ bool SystemClass::Initialize()
 		MessageBox(m_hwnd, L"Could not initialize Direct Sound.", L"Error", MB_OK);
 		return false;
 	}
+	m_Sound->StartMusic();
 	
 	return true;
 }

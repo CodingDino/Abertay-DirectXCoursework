@@ -166,11 +166,11 @@
     <None Include="texture.ps">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="font.vs">
-      <Filter>Shader Files</Filter>
-    </None>
     <None Include="font.ps">
       <Filter>Shader Files</Filter>
+    </None>
+    <None Include="font.vs">
+      <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
 </Project>

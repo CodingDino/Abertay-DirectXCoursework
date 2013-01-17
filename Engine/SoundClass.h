@@ -71,6 +71,8 @@ public:
 	// Play functions
 	bool StartShipEngine();
 	bool StopShipEngine();
+	bool StartMusic();
+	bool StopMusic();
 
 	// Toggle Mute
 	bool Mute();

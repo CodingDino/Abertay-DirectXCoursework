@@ -62,10 +62,10 @@ bool SoundClass::Initialize(HWND hwnd)
 	}
  
 	// Load a wave audio file onto a secondary buffer.
-	result = LoadWaveFile("../Engine/data/sound01.wav", &m_music, hwnd);
+	result = LoadWaveFile("../Engine/data/music03.wav", &m_music, hwnd);
 	if(!result)
 	{
-		MessageBox(hwnd, L"Could not load sound01.wav.", L"Error", MB_OK);
+		MessageBox(hwnd, L"Could not load music03.wav.", L"Error", MB_OK);
 		return false;
 	}
  
@@ -78,6 +78,7 @@ bool SoundClass::Initialize(HWND hwnd)
 	}
 
 	// Start everything playing (it will be silent)
+	m_music->Play(0, 0, DSBPLAY_LOOPING);
 	m_shipEngine->Play(0, 0, DSBPLAY_LOOPING);
 
 	return true;
@@ -455,6 +456,26 @@ bool SoundClass::StartShipEngine()
 bool SoundClass::StopShipEngine()
 {
 	m_playShipEngine = false;
+	return true;
+}
+
+
+// |----------------------------------------------------------------------------|
+// |						          StartMusic								|
+// |----------------------------------------------------------------------------|
+bool SoundClass::StartMusic()
+{
+	m_playMusic = true;
+	return true;
+}
+
+
+// |----------------------------------------------------------------------------|
+// |						           StopMusic								|
+// |----------------------------------------------------------------------------|
+bool SoundClass::StopMusic()
+{
+	m_playMusic = false;
 	return true;
 }
 
