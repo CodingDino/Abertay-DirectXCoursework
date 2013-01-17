@@ -20,6 +20,8 @@
 #include "BitmapClass.h"
 #include "textclass.h"
 #include "PlanetClass.h"
+#include "particleshaderclass.h"
+#include "particlesystemclass.h"
 
 
 // |----------------------------------------------------------------------------|
@@ -115,6 +117,7 @@ private:
 	PlanetClass* m_saturn;
 	PlanetClass* m_uranus;
 	PlanetClass* m_neptune;
+	PlanetClass* m_halley;
 
 	// Skubox
 	ModelClass* m_skybox;
@@ -122,4 +125,8 @@ private:
 	// Screen dimmensions
 	int m_screenWidth;
 	int m_screenHeight;
+
+	// Particle system
+	ParticleShaderClass* m_ParticleShader;
+	ParticleSystemClass* m_ParticleSystem;
 };

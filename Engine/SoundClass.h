@@ -94,6 +94,9 @@ private:
 	bool ProcessSound(float frameTime, IDirectSoundBuffer8* &buffer, bool &onOffSetting, LONG &volume);
  
 private:
+	
+	//|-----------------------------Private Data Members------------------------|
+
 	IDirectSound8* m_DirectSound;
 	IDirectSoundBuffer* m_primaryBuffer;
 

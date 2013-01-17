@@ -73,7 +73,7 @@ bool PlanetClass::Initialize(ID3D11Device* device, char* modelFilename, WCHAR* t
 	m_rotation_tilt =	rotation_tilt	* 1;
 	m_orbit_speed =		orbit_speed		* 1000;
 	m_orbit_radius =	orbit_radius	* 30;
-	m_orbit_center =	orbit_center;
+	m_orbit_center =	Coord(orbit_center.x*30,orbit_center.y*30,orbit_center.z*30);
 	m_orbit_tilt =		orbit_tilt		* 1;
 
 	return true;

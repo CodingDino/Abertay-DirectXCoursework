@@ -33,7 +33,10 @@ GraphicsClass::GraphicsClass() :
 	m_jupiter(0),
 	m_uranus(0),
 	m_neptune(0),
-	m_skybox(0)
+	m_halley(0),
+	m_skybox(0),
+	m_ParticleShader(0),
+	m_ParticleSystem(0)
 {
 }
 
@@ -222,6 +225,19 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		10.0f,									// Orbital radius (in AU)
 		Coord(0,0,0),							// Orbit center
 		1.768f);								// Orbital tilt
+	
+	m_halley = new PlanetClass;
+	if(!m_halley) return false;
+	result = m_halley->Initialize(m_D3D->GetDevice(), 
+		"../Engine/data/sphere.txt",			// Model
+		L"../Engine/data/comet.jpg",			// Texture
+		0.1f,									// Radius
+		0.5f,									// Rotation speed (rot/day)
+		0.0f,									// Axial tilt
+		0.0000364f,								// Orbital speed (orbit/day)
+		5.0f,									// Orbital radius
+		Coord(7,0,2),							// Orbit center
+		162.0f);								// Orbital tilt
 
 	m_skybox = new ModelClass;
 	if(!m_skybox) return false;
@@ -312,6 +328,35 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
+	// Create the particle shader object.
+	m_ParticleShader = new ParticleShaderClass;
+	if(!m_ParticleShader)
+	{
+		return false;
+	}
+
+	// Initialize the particle shader object.
+	result = m_ParticleShader->Initialize(m_D3D->GetDevice(), hwnd);
+	if(!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the particle shader object.", L"Error", MB_OK);
+		return false;
+	}
+
+	// Create the particle system object.
+	m_ParticleSystem = new ParticleSystemClass;
+	if(!m_ParticleSystem)
+	{
+		return false;
+	}
+
+	// Initialize the particle system object.
+	result = m_ParticleSystem->Initialize(m_D3D->GetDevice(), L"../Engine/data/star.dds");
+	if(!result)
+	{
+		return false;
+	}
+
 
 	return true;
 }
@@ -322,6 +367,22 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 // |----------------------------------------------------------------------------|
 void GraphicsClass::Shutdown()
 {
+	// Release the particle system object.
+	if(m_ParticleSystem)
+	{
+		m_ParticleSystem->Shutdown();
+		delete m_ParticleSystem;
+		m_ParticleSystem = 0;
+	}
+
+	// Release the particle shader object.
+	if(m_ParticleShader)
+	{
+		m_ParticleShader->Shutdown();
+		delete m_ParticleShader;
+		m_ParticleShader = 0;
+	}
+
 	// Release the planets.
 	if(m_sun)
 	{
@@ -376,6 +437,12 @@ void GraphicsClass::Shutdown()
 		m_neptune->Shutdown();
 		delete m_neptune;
 		m_neptune = 0;
+	}
+	if(m_halley)
+	{
+		m_halley->Shutdown();
+		delete m_halley;
+		m_halley = 0;
 	}
 
 	// Release skybox
@@ -472,6 +539,12 @@ bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpu, float frameT
 	m_saturn->Frame(frameTime);
 	m_uranus->Frame(frameTime);
 	m_neptune->Frame(frameTime);
+	m_halley->Frame(frameTime);
+
+	// Run the frame processing for the particle system.
+	D3DXMATRIX positionMatrix = m_halley->GetTranslate();
+	m_ParticleSystem->SetPosition(positionMatrix._41,positionMatrix._42,positionMatrix._43);
+	m_ParticleSystem->Frame(frameTime, m_D3D->GetDeviceContext());
 	
 	// Render the graphics scene.
 	result = Render(mouseX, mouseY, camera_position);
@@ -561,6 +634,28 @@ bool GraphicsClass::Render(int mouseX, int mouseY, Coord camera_position)
 	m_neptune->GetModel(planet_model);
 	result = result && ModelRender(*planet_model, m_neptune->GetScale(), m_neptune->GetTranslate(), 
 		m_neptune->GetRotate());
+	
+	m_halley->GetModel(planet_model);
+	result = result && ModelRender(*planet_model, m_halley->GetScale(), m_halley->GetTranslate(), 
+		m_halley->GetRotate());
+
+	// Turn on alpha blending.
+	m_D3D->TurnOnAlphaBlending();
+
+	// Put the particle system vertex and index buffers on the graphics pipeline to prepare them for drawing.
+	m_ParticleSystem->Render(m_D3D->GetDeviceContext());
+
+	// Render the particles using the texture shader.
+	D3DXMatrixIdentity(&worldMatrix);
+	result = m_ParticleShader->Render(m_D3D->GetDeviceContext(), m_ParticleSystem->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, 
+					  m_ParticleSystem->GetTexture());
+	if(!result)
+	{
+		return false;
+	}
+
+	// Turn off alpha blending.
+	m_D3D->TurnOffAlphaBlending();
 
 	// Turn off the Z buffer to begin all 2D rendering.
 	m_D3D->TurnZBufferOff();
