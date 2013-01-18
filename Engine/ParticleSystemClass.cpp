@@ -1,5 +1,5 @@
 // Solar Exploration Sim
-// Developed for DirectX Coursework for Abertay University
+// Developed for DirectX Coursework for Abertay University, based on tutorials from http://www.rastertek.com, based on tutorials from http://www.rastertek.com
 // Copyright Sarah Herzog, 2011, all rights reserved.
 //
 // ParticleSystemClass

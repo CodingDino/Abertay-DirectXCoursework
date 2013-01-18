@@ -1,5 +1,5 @@
 // Solar Exploration Sim
-// Developed for DirectX Coursework for Abertay University
+// Developed for DirectX Coursework for Abertay University, based on tutorials from http://www.rastertek.com
 // Copyright Sarah Herzog, 2011, all rights reserved.
 //
 // GraphicsClass
@@ -362,7 +362,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		MessageBox(hwnd, L"Could not initialize the crosshairs object.", L"Error", MB_OK);
 		return false;
 	}
-	result = HUD->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, L"../Engine/data/hud02.png", screenWidth, screenHeight);
+	result = HUD->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, L"../Engine/data/hud04.png", screenWidth, screenHeight);
 	if(!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the HUD object.", L"Error", MB_OK);
