@@ -36,7 +36,11 @@ GraphicsClass::GraphicsClass() :
 	m_halley(0),
 	m_skybox(0),
 	m_ParticleShader(0),
-	m_ParticleSystem(0)
+	m_ParticleSystem(0),
+	m_titleScreen(0),
+	m_controlsScreen(0),
+	m_screen(0),
+	m_screen_counter(0)
 {
 }
 
@@ -298,6 +302,16 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	{
 		return false;
 	}
+	m_titleScreen = new BitmapClass;
+	if(!m_titleScreen)
+	{
+		return false;
+	}
+	m_controlsScreen = new BitmapClass;
+	if(!m_controlsScreen)
+	{
+		return false;
+	}
 
 	// Initialize the bitmap objects.
 	result = crosshairs->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, L"../Engine/data/crosshair.png", 60, 50);
@@ -310,6 +324,18 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	if(!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the HUD object.", L"Error", MB_OK);
+		return false;
+	}
+	result = m_titleScreen->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, L"../Engine/data/titleScreen.png", screenWidth, screenHeight);
+	if(!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the m_titleScreen object.", L"Error", MB_OK);
+		return false;
+	}
+	result = m_controlsScreen->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, L"../Engine/data/controlScreen.png", screenWidth, screenHeight);
+	if(!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the m_controlsScreen object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -474,6 +500,18 @@ void GraphicsClass::Shutdown()
 		delete HUD;
 		HUD = 0;
 	}
+	if(m_titleScreen)
+	{
+		m_titleScreen->Shutdown();
+		delete m_titleScreen;
+		m_titleScreen = 0;
+	}
+	if(m_controlsScreen)
+	{
+		m_controlsScreen->Shutdown();
+		delete m_controlsScreen;
+		m_controlsScreen = 0;
+	}
 
 	// Release the light object.
 	if(m_Light)
@@ -519,9 +557,17 @@ void GraphicsClass::Shutdown()
 // |						       Frame										|
 // |----------------------------------------------------------------------------|
 bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpu, float frameTime,
-	Coord camera_rotation, Coord camera_position)
+	Coord camera_rotation, Coord camera_position, bool transfer)
 {
 	bool result;
+
+	// Swap out bitmaps if needed
+	if (transfer && m_screen_counter >= 1000)
+	{
+		m_screen_counter = 0;
+		m_screen++;
+	}
+	m_screen_counter += frameTime;
 
 	// Set the position of the camera.
 	m_Camera->SetPosition(camera_position.x, camera_position.y, camera_position.z-300.0f);
@@ -676,6 +722,10 @@ bool GraphicsClass::Render(int mouseX, int mouseY, Coord camera_position)
 
 	// Turn off alpha blending after rendering the text.
 	m_D3D->TurnOffAlphaBlending();
+
+	// TITLE SCREEN rendering
+	if (m_screen == 0) result = result && BitmapRender(*m_titleScreen, 0, 0);
+	if (m_screen == 1) result = result && BitmapRender(*m_controlsScreen, 0, 0);
 
 	// Turn the Z buffer back on now that all 2D rendering has completed.
 	m_D3D->TurnZBufferOn();

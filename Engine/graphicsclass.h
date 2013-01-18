@@ -55,14 +55,14 @@ public:
 	void Shutdown();
 
 	// Frame-by-frame graphics processing
-	bool Frame(int mouseX, int mouseY, int fps, int cpu, float frameTime, Coord camera_rotation, Coord camera_position);
+	bool Frame(int mouseX, int mouseY, int fps, int cpu, float frameTime, 
+		Coord camera_rotation, Coord camera_position, bool transfer);
 
 private:
 
 	//|-------------------------------Private Functions-------------------------|
 
 	// Calls render functions in order
-	// TODO: Merge this with Frame(), maybe?
 	bool Render(int mouseX, int mouseY, Coord camera_position);
 
 	// Rendering setup (starts scene, gets world, view, and projection matrix)
@@ -103,6 +103,12 @@ private:
 	// 2D Bitmaps
 	BitmapClass* crosshairs;
 	BitmapClass* HUD;
+	BitmapClass* m_titleScreen;
+	BitmapClass* m_controlsScreen;
+
+	// Screen
+	int m_screen;
+	float m_screen_counter;
 
 	// FPS output
 	TextClass* m_Text;

@@ -30,7 +30,7 @@ private:
 	{
 		float positionX, positionY, positionZ;
 		float red, green, blue;
-		float velocity;
+		float velocityX, velocityY, velocityZ;
 		bool active;
 	};
 

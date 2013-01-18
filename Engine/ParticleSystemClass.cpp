@@ -201,13 +201,13 @@ bool ParticleSystemClass::InitializeParticleSystem()
 	int i;
 
 	// Set the random deviation of where the particles can be located when emitted.
-	m_particleDeviationX = 0.5f;
-	m_particleDeviationY = 0.5f;
-	m_particleDeviationZ = 0.5f;
+	m_particleDeviationX = 0.1f;
+	m_particleDeviationY = 0.1f;
+	m_particleDeviationZ = 0.1f;
 
 	// Set the speed and speed variation of particles.
-	m_particleVelocity = 1.0f;
-	m_particleVelocityVariation = 0.2f;
+	m_particleVelocity = 0.5f;
+	m_particleVelocityVariation = 0.1f;
 
 	// Set the physical size of the particles.
 	m_particleSize = 0.2f;
@@ -375,7 +375,7 @@ void ParticleSystemClass::ShutdownBuffers()
 void ParticleSystemClass::EmitParticles(float frameTime)
 {
 	bool emitParticle, found;
-	float positionX, positionY, positionZ, velocity, red, green, blue;
+	float positionX, positionY, positionZ, velocityX, velocityY, velocityZ, red, green, blue;
 	int index, i, j;
 
 
@@ -402,7 +402,9 @@ void ParticleSystemClass::EmitParticles(float frameTime)
 		positionY = y + (((float)rand()-(float)rand())/RAND_MAX) * m_particleDeviationY;
 		positionZ = z + (((float)rand()-(float)rand())/RAND_MAX) * m_particleDeviationZ;
 
-		velocity = m_particleVelocity + (((float)rand()-(float)rand())/RAND_MAX) * m_particleVelocityVariation;
+		velocityX = (((float)rand()-(float)rand())/RAND_MAX) * m_particleVelocityVariation;
+		velocityY = (((float)rand()-(float)rand())/RAND_MAX) * m_particleVelocityVariation;
+		velocityZ = (((float)rand()-(float)rand())/RAND_MAX) * m_particleVelocityVariation;
 
 		red   = 1.0f;
 		green = 1.0f;
@@ -436,7 +438,9 @@ void ParticleSystemClass::EmitParticles(float frameTime)
 			m_particleList[i].red       = m_particleList[j].red;
 			m_particleList[i].green     = m_particleList[j].green;
 			m_particleList[i].blue      = m_particleList[j].blue;
-			m_particleList[i].velocity  = m_particleList[j].velocity;
+			m_particleList[i].velocityX  = m_particleList[j].velocityX;
+			m_particleList[i].velocityY  = m_particleList[j].velocityY;
+			m_particleList[i].velocityZ  = m_particleList[j].velocityZ;
 			m_particleList[i].active    = m_particleList[j].active;
 			i--;
 			j--;
@@ -449,7 +453,9 @@ void ParticleSystemClass::EmitParticles(float frameTime)
 		m_particleList[index].red       = red;
 		m_particleList[index].green     = green;
 		m_particleList[index].blue      = blue;
-		m_particleList[index].velocity  = velocity;
+		m_particleList[index].velocityX  = velocityX;
+		m_particleList[index].velocityY  = velocityY;
+		m_particleList[index].velocityZ  = velocityZ;
 		m_particleList[index].active    = true;
 	}
 
@@ -468,7 +474,9 @@ void ParticleSystemClass::UpdateParticles(float frameTime)
 	// Each frame we update all the particles by making them move downwards using their position, velocity, and the frame time.
 	for(i=0; i<m_currentParticleCount; i++)
 	{
-		//m_particleList[i].positionY = m_particleList[i].positionY - (m_particleList[i].velocity * frameTime * 0.001f);
+		m_particleList[i].positionX = m_particleList[i].positionX + (m_particleList[i].velocityX * frameTime * 0.001f);
+		m_particleList[i].positionY = m_particleList[i].positionY + (m_particleList[i].velocityY * frameTime * 0.001f);
+		m_particleList[i].positionZ = m_particleList[i].positionZ + (m_particleList[i].velocityZ * frameTime * 0.001f);
 	}
 
 	return;
@@ -503,7 +511,9 @@ void ParticleSystemClass::KillParticles()
 				m_particleList[j].red       = m_particleList[j+1].red;
 				m_particleList[j].green     = m_particleList[j+1].green;
 				m_particleList[j].blue      = m_particleList[j+1].blue;
-				m_particleList[j].velocity  = m_particleList[j+1].velocity;
+				m_particleList[j].velocityX  = m_particleList[j+1].velocityX;
+				m_particleList[j].velocityY  = m_particleList[j+1].velocityY;
+				m_particleList[j].velocityZ  = m_particleList[j+1].velocityZ;
 				m_particleList[j].active    = m_particleList[j+1].active;
 			}
 		}

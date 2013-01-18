@@ -50,13 +50,11 @@ Coord::Coord(float new_x, float new_y, float new_z) :
 // |----------------------------------------------------------------------------|
 // |							  Operator =									|
 // |----------------------------------------------------------------------------|
-Coord& Coord::operator= (const Coord& other)
+Coord Coord::operator= (const Coord& other)
 {
-	Coord new_coord(other);
-	return new_coord;
+	return Coord(other);
 }
-Coord& Coord::operator= (const float uniform_value)
+Coord Coord::operator= (const float uniform_value)
 {
-	Coord new_coord(uniform_value, uniform_value, uniform_value);
-	return new_coord;
+	return Coord(uniform_value, uniform_value, uniform_value);
 }

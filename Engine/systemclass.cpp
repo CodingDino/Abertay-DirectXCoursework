@@ -343,9 +343,13 @@ bool SystemClass::Frame()
 	m_Fps->Frame();
 	m_Cpu->Frame();
 
+	// Decide if we need to transfer to a new screen
+	bool transfer = m_Input->IsSpacePressed();
+
 	// Do the frame processing for the graphics object.
 	result = m_Graphics->Frame(mouseX, mouseY, m_Fps->GetFps(), 
-		m_Cpu->GetCpuPercentage(), m_Timer->GetTime(), camera_rotation, camera_position);
+		m_Cpu->GetCpuPercentage(), m_Timer->GetTime(), camera_rotation, 
+		camera_position, transfer);
 	if(!result)
 	{
 		return false;
