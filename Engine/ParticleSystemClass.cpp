@@ -95,7 +95,8 @@ void ParticleSystemClass::Shutdown()
 // |----------------------------------------------------------------------------|
 // |						        Frame										|
 // |----------------------------------------------------------------------------|
-bool ParticleSystemClass::Frame(float frameTime, ID3D11DeviceContext* deviceContext)
+bool ParticleSystemClass::Frame(float frameTime, 
+	ID3D11DeviceContext* deviceContext, float camX, float camY, float camZ)
 {
 	bool result;
 
@@ -107,7 +108,7 @@ bool ParticleSystemClass::Frame(float frameTime, ID3D11DeviceContext* deviceCont
 	EmitParticles(frameTime);
 	
 	// Update the position of the particles.
-	UpdateParticles(frameTime);
+	UpdateParticles(frameTime, camX, camY, camZ);
 
 	// Update the dynamic vertex buffer with the new position of each particle.
 	result = UpdateBuffers(deviceContext);
@@ -466,7 +467,7 @@ void ParticleSystemClass::EmitParticles(float frameTime)
 // |----------------------------------------------------------------------------|
 // |						       UpdateParticles								|
 // |----------------------------------------------------------------------------|
-void ParticleSystemClass::UpdateParticles(float frameTime)
+void ParticleSystemClass::UpdateParticles(float frameTime, float camX, float camY, float camZ)
 {
 	int i;
 
@@ -478,6 +479,89 @@ void ParticleSystemClass::UpdateParticles(float frameTime)
 		m_particleList[i].positionY = m_particleList[i].positionY + (m_particleList[i].velocityY * frameTime * 0.001f);
 		m_particleList[i].positionZ = m_particleList[i].positionZ + (m_particleList[i].velocityZ * frameTime * 0.001f);
 	}
+
+	// Need to re-order particles now, based on camera position
+	for ( int i=0; i < m_currentParticleCount; ++i)
+	{
+		// Determine distance
+		float this_dist_square = pow(m_particleList[i].positionX-camX,2)
+			+pow(m_particleList[i].positionY-camY,2)
+			+pow(m_particleList[i].positionZ-camZ,2);
+
+		// Copy out our value
+		ParticleType this_value;
+				this_value.positionX = m_particleList[i].positionX;
+				this_value.positionY = m_particleList[i].positionY;
+				this_value.positionZ = m_particleList[i].positionZ;
+				this_value.red       = m_particleList[i].red;
+				this_value.green     = m_particleList[i].green;
+				this_value.blue      = m_particleList[i].blue;
+				this_value.velocityX  = m_particleList[i].velocityX;
+				this_value.velocityY  = m_particleList[i].velocityY;
+				this_value.velocityZ  = m_particleList[i].velocityZ;
+				this_value.active    = m_particleList[i].active;
+
+		bool placed = false;
+
+		// Determine position in previously sorted array
+		// Start with position just before this one and work down
+		for ( int j=(i-1); j > 0; --j)
+		{
+			float that_dist_square = pow(m_particleList[j].positionX-camX,2)
+				+pow(m_particleList[j].positionY-camY,2)
+				+pow(m_particleList[j].positionZ-camZ,2);
+
+
+			// First, check if we are where we need to be
+			if (this_dist_square >= that_dist_square)
+			{
+				// We are where we need to be, so insert
+				placed = true;
+				m_particleList[j+1].positionX = this_value.positionX;
+				m_particleList[j+1].positionY = this_value.positionY;
+				m_particleList[j+1].positionZ = this_value.positionZ;
+				m_particleList[j+1].red       = this_value.red;
+				m_particleList[j+1].green     = this_value.green;
+				m_particleList[j+1].blue      = this_value.blue;
+				m_particleList[j+1].velocityX  = this_value.velocityX;
+				m_particleList[j+1].velocityY  = this_value.velocityY;
+				m_particleList[j+1].velocityZ  = this_value.velocityZ;
+				m_particleList[j+1].active    = this_value.active;
+
+				break;
+			}
+			else
+			{
+				// Scoot that value over, since it needs to be to our right
+				m_particleList[j+1].positionX = m_particleList[j].positionX;
+				m_particleList[j+1].positionY = m_particleList[j].positionY;
+				m_particleList[j+1].positionZ = m_particleList[j].positionZ;
+				m_particleList[j+1].red       = m_particleList[j].red;
+				m_particleList[j+1].green     = m_particleList[j].green;
+				m_particleList[j+1].blue      = m_particleList[j].blue;
+				m_particleList[j+1].velocityX  = m_particleList[j].velocityX;
+				m_particleList[j+1].velocityY  = m_particleList[j].velocityY;
+				m_particleList[j+1].velocityZ  = m_particleList[j].velocityZ;
+				m_particleList[j+1].active    = m_particleList[j].active;
+			}
+		}
+
+		if (!placed)
+		{
+			m_particleList[0].positionX = this_value.positionX;
+			m_particleList[0].positionY = this_value.positionY;
+			m_particleList[0].positionZ = this_value.positionZ;
+			m_particleList[0].red       = this_value.red;
+			m_particleList[0].green     = this_value.green;
+			m_particleList[0].blue      = this_value.blue;
+			m_particleList[0].velocityX  = this_value.velocityX;
+			m_particleList[0].velocityY  = this_value.velocityY;
+			m_particleList[0].velocityZ  = this_value.velocityZ;
+			m_particleList[0].active    = this_value.active;
+		}
+
+	}
+
 
 	return;
 }

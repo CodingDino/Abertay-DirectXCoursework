@@ -660,7 +660,7 @@ bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpu, float frameT
 	// Run the frame processing for the particle system.
 	positionMatrix = m_halley->GetTranslate();
 	m_ParticleSystem->SetPosition(positionMatrix._41,positionMatrix._42,positionMatrix._43);
-	m_ParticleSystem->Frame(frameTime, m_D3D->GetDeviceContext());
+	m_ParticleSystem->Frame(frameTime, m_D3D->GetDeviceContext(), camera_position.x, camera_position.y, camera_position.z);
 	
 	// Render the graphics scene.
 	result = Render(mouseX, mouseY, camera_position);

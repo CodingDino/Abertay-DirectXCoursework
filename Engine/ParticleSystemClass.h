@@ -51,7 +51,7 @@ public:
 
 	bool Initialize(ID3D11Device*, WCHAR*);
 	void Shutdown();
-	bool Frame(float, ID3D11DeviceContext*);
+	bool Frame(float, ID3D11DeviceContext*, float camX, float camY, float camZ);
 	void Render(ID3D11DeviceContext*);
 
 	ID3D11ShaderResourceView* GetTexture();
@@ -73,7 +73,7 @@ private:
 	void ShutdownBuffers();
 
 	void EmitParticles(float);
-	void UpdateParticles(float);
+	void UpdateParticles(float, float camX, float camY, float camZ);
 	void KillParticles();
 
 	bool UpdateBuffers(ID3D11DeviceContext*);
