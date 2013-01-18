@@ -10,6 +10,7 @@
 // |								Includes									|
 // |----------------------------------------------------------------------------|
 #include "positionclass.h"
+#include <d3dx10math.h>
 
 
 // |----------------------------------------------------------------------------|
@@ -338,8 +339,18 @@ void PositionClass::MoveForward(bool keydown)
 		}
 	}
 
-	// Update the rotation using the turning speed.
-	m_positionZ += m_forwardMoveSpeed;
+	// Modify speed based on rotation.
+	D3DXMATRIX worldMatrix, moveMatrix, rotationMatrix;
+	D3DXMatrixTranslation(&moveMatrix, 0, 0, m_forwardMoveSpeed);
+	D3DXMatrixRotationYawPitchRoll(&rotationMatrix, m_rotationX * -0.0174532925f, 
+		m_rotationY * -0.0174532925f, 
+		m_rotationZ * 0.0174532925f);
+	worldMatrix = moveMatrix * rotationMatrix;
+
+	// Update the position.
+	m_positionY += worldMatrix._41;
+	m_positionX += worldMatrix._42;
+	m_positionZ += worldMatrix._43;
 
 	return;
 }
@@ -371,8 +382,18 @@ void PositionClass::MoveBackward(bool keydown)
 		}
 	}
 
-	// Update the rotation using the turning speed.
-	m_positionZ -= m_backwardMoveSpeed;
+	// Modify speed based on rotation.
+	D3DXMATRIX worldMatrix, moveMatrix, rotationMatrix;
+	D3DXMatrixTranslation(&moveMatrix, 0, 0, -1*m_backwardMoveSpeed);
+	D3DXMatrixRotationYawPitchRoll(&rotationMatrix, m_rotationX * -0.0174532925f, 
+		m_rotationY * -0.0174532925f, 
+		m_rotationZ * 0.0174532925f);
+	worldMatrix = moveMatrix * rotationMatrix;
+
+	// Update the position.
+	m_positionY += worldMatrix._41;
+	m_positionX += worldMatrix._42;
+	m_positionZ += worldMatrix._43;
 
 	return;
 }
@@ -404,8 +425,18 @@ void PositionClass::MoveLeft(bool keydown)
 		}
 	}
 
-	// Update the rotation using the turning speed.
-	m_positionX -= m_leftMoveSpeed;
+	// Modify speed based on rotation.
+	D3DXMATRIX worldMatrix, moveMatrix, rotationMatrix;
+	D3DXMatrixTranslation(&moveMatrix, 0, -1*m_leftMoveSpeed, 0);
+	D3DXMatrixRotationYawPitchRoll(&rotationMatrix, m_rotationX * -0.0174532925f, 
+		m_rotationY * -0.0174532925f, 
+		m_rotationZ * -0.0174532925f);
+	worldMatrix = moveMatrix * rotationMatrix;
+
+	// Update the position.
+	m_positionY += worldMatrix._41;
+	m_positionX += worldMatrix._42;
+	m_positionZ += worldMatrix._43;
 
 	return;
 }
@@ -437,8 +468,18 @@ void PositionClass::MoveRight(bool keydown)
 		}
 	}
 
-	// Update the rotation using the turning speed.
-	m_positionX += m_rightMoveSpeed;
+	// Modify speed based on rotation.
+	D3DXMATRIX worldMatrix, moveMatrix, rotationMatrix;
+	D3DXMatrixTranslation(&moveMatrix, 0, 1*m_rightMoveSpeed, 0);
+	D3DXMatrixRotationYawPitchRoll(&rotationMatrix, m_rotationX * -0.0174532925f, 
+		m_rotationY * -0.0174532925f, 
+		m_rotationZ * -0.0174532925f);
+	worldMatrix = moveMatrix * rotationMatrix;
+
+	// Update the position.
+	m_positionY += worldMatrix._41;
+	m_positionX += worldMatrix._42;
+	m_positionZ += worldMatrix._43;
 
 	return;
 }
@@ -470,8 +511,18 @@ void PositionClass::MoveUp(bool keydown)
 		}
 	}
 
-	// Update the rotation using the turning speed.
-	m_positionY += m_upMoveSpeed;
+	// Modify speed based on rotation.
+	D3DXMATRIX worldMatrix, moveMatrix, rotationMatrix;
+	D3DXMatrixTranslation(&moveMatrix, m_upMoveSpeed, 0, 0);
+	D3DXMatrixRotationYawPitchRoll(&rotationMatrix, m_rotationX * -0.0174532925f, 
+		m_rotationY * -0.0174532925f, 
+		m_rotationZ * -0.0174532925f);
+	worldMatrix = moveMatrix * rotationMatrix;
+
+	// Update the position.
+	m_positionY += worldMatrix._41;
+	m_positionX += worldMatrix._42;
+	m_positionZ += worldMatrix._43;
 
 	return;
 }
@@ -503,8 +554,18 @@ void PositionClass::MoveDown(bool keydown)
 		}
 	}
 
-	// Update the rotation using the turning speed.
-	m_positionY -= m_downMoveSpeed;
+	// Modify speed based on rotation.
+	D3DXMATRIX worldMatrix, moveMatrix, rotationMatrix;
+	D3DXMatrixTranslation(&moveMatrix, -1*m_downMoveSpeed, 0, 0);
+	D3DXMatrixRotationYawPitchRoll(&rotationMatrix, m_rotationX * -0.0174532925f, 
+		m_rotationY * -0.0174532925f, 
+		m_rotationZ * -0.0174532925f);
+	worldMatrix = moveMatrix * rotationMatrix;
+
+	// Update the position.
+	m_positionY += worldMatrix._41;
+	m_positionX += worldMatrix._42;
+	m_positionZ += worldMatrix._43;
 
 	return;
 }

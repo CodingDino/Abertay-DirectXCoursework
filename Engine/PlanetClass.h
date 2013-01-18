@@ -50,6 +50,8 @@ public:
 	D3DXMATRIX GetTranslate();
 	D3DXMATRIX GetRotate();
 
+	void SetOrbitCenter(float x, float y, float z);
+
 private:
 
 	//|-----------------------------Private Data Members------------------------|

@@ -124,6 +124,9 @@ private:
 	PlanetClass* m_uranus;
 	PlanetClass* m_neptune;
 	PlanetClass* m_halley;
+	PlanetClass* m_luna;
+	PlanetClass* m_phobos;
+	PlanetClass* m_deimos ;
 
 	// Skubox
 	ModelClass* m_skybox;

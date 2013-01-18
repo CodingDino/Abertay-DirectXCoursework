@@ -174,10 +174,13 @@ D3DXMATRIX PlanetClass::GetScale()
 // |----------------------------------------------------------------------------|
 D3DXMATRIX PlanetClass::GetTranslate()
 {
-	D3DXMATRIX worldMatrix, translationMatrix, orbitMatrix, tiltMatrix;
+	D3DXMATRIX worldMatrix, translationMatrix, radiusMatrix, orbitMatrix, tiltMatrix;
+
+	// Translate to orbit center
+	D3DXMatrixTranslation(&translationMatrix, m_orbit_center.x, m_orbit_center.y, m_orbit_center.z);
 
 	// Translate out to orbit radius
-	D3DXMatrixTranslation(&translationMatrix, m_orbit_radius, 0, 0);
+	D3DXMatrixTranslation(&radiusMatrix, m_orbit_radius, 0, 0);
 
 	// Determine point in orbit
 	D3DXMatrixRotationYawPitchRoll(&orbitMatrix, 0.01745f*m_orbit, 0, 0);
@@ -186,7 +189,7 @@ D3DXMATRIX PlanetClass::GetTranslate()
 	D3DXMatrixRotationYawPitchRoll(&tiltMatrix, 0, 0.01745f*m_orbit_tilt, 0);
 	
 	// Translate first, then rotate and skew
-	worldMatrix = translationMatrix * orbitMatrix * tiltMatrix;
+	worldMatrix = radiusMatrix * orbitMatrix * tiltMatrix * translationMatrix;
 
 	return worldMatrix;
 }
@@ -213,4 +216,14 @@ D3DXMATRIX PlanetClass::GetRotate()
 	worldMatrix = rotationMatrix * tiltMatrix;
 
 	return worldMatrix;
+}
+
+// |----------------------------------------------------------------------------|
+// |						      SetOrbitCenter								|
+// |----------------------------------------------------------------------------|
+void PlanetClass::SetOrbitCenter(float x, float y, float z)
+{
+	m_orbit_center.x = x;
+	m_orbit_center.y = y;
+	m_orbit_center.z = z;
 }

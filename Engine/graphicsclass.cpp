@@ -40,7 +40,10 @@ GraphicsClass::GraphicsClass() :
 	m_titleScreen(0),
 	m_controlsScreen(0),
 	m_screen(0),
-	m_screen_counter(0)
+	m_screen_counter(0),
+	m_luna(0),
+	m_phobos(0),
+	m_deimos(0)
 {
 }
 
@@ -240,8 +243,47 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		0.0f,									// Axial tilt
 		0.0000364f,								// Orbital speed (orbit/day)
 		5.0f,									// Orbital radius
-		Coord(7,0,2),							// Orbit center
+		Coord(2,0,1),							// Orbit center
 		162.0f);								// Orbital tilt
+
+	m_luna = new PlanetClass;
+	if(!m_luna) return false;
+	result = m_luna->Initialize(m_D3D->GetDevice(), 
+		"../Engine/data/sphere.txt",			// Model
+		L"../Engine/data/luna.jpg",				// Texture
+		0.273f,									// Radius
+		0.0357f,								// Rotation speed (rot/day)
+		1.5f,									// Axial tilt
+		0.0357f,								// Orbital speed (orbit/day)
+		0.1f,									// Orbital radius
+		Coord(0,0,0),							// Orbit center
+		5.145f);								// Orbital tilt
+
+	m_phobos = new PlanetClass;
+	if(!m_phobos) return false;
+	result = m_phobos->Initialize(m_D3D->GetDevice(), 
+		"../Engine/data/sphere.txt",			// Model
+		L"../Engine/data/phobos.jpg",			// Texture
+		0.21f,									// Radius
+		0.3f,									// Rotation speed (rot/day)
+		0.0f,									// Axial tilt
+		0.3f,									// Orbital speed (orbit/day)
+		0.05f,									// Orbital radius
+		Coord(0,0,0),							// Orbit center
+		26.04f);								// Orbital tilt
+
+	m_deimos = new PlanetClass;
+	if(!m_deimos) return false;
+	result = m_deimos->Initialize(m_D3D->GetDevice(), 
+		"../Engine/data/sphere.txt",			// Model
+		L"../Engine/data/deimos.jpg",			// Texture
+		0.097f,									// Radius
+		0.0792f,								// Rotation speed (rot/day)
+		0.0f,									// Axial tilt
+		0.0792f,								// Orbital speed (orbit/day)
+		0.1f,									// Orbital radius
+		Coord(0,0,0),							// Orbit center
+		27.58f);								// Orbital tilt
 
 	m_skybox = new ModelClass;
 	if(!m_skybox) return false;
@@ -470,6 +512,24 @@ void GraphicsClass::Shutdown()
 		delete m_halley;
 		m_halley = 0;
 	}
+	if(m_luna)
+	{
+		m_luna->Shutdown();
+		delete m_luna;
+		m_luna = 0;
+	}
+	if(m_phobos)
+	{
+		m_phobos->Shutdown();
+		delete m_phobos;
+		m_phobos = 0;
+	}
+	if(m_deimos)
+	{
+		m_deimos->Shutdown();
+		delete m_deimos;
+		m_deimos = 0;
+	}
 
 	// Release skybox
 	if(m_skybox)
@@ -587,8 +647,18 @@ bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpu, float frameT
 	m_neptune->Frame(frameTime);
 	m_halley->Frame(frameTime);
 
+	// Update moons
+	D3DXMATRIX positionMatrix = m_earth->GetTranslate();
+	m_luna->SetOrbitCenter(positionMatrix._41,positionMatrix._42,positionMatrix._43);
+	m_luna->Frame(frameTime);
+	positionMatrix = m_mars->GetTranslate();
+	m_phobos->SetOrbitCenter(positionMatrix._41,positionMatrix._42,positionMatrix._43);
+	m_phobos->Frame(frameTime);
+	m_deimos->SetOrbitCenter(positionMatrix._41,positionMatrix._42,positionMatrix._43);
+	m_deimos->Frame(frameTime);
+
 	// Run the frame processing for the particle system.
-	D3DXMATRIX positionMatrix = m_halley->GetTranslate();
+	positionMatrix = m_halley->GetTranslate();
 	m_ParticleSystem->SetPosition(positionMatrix._41,positionMatrix._42,positionMatrix._43);
 	m_ParticleSystem->Frame(frameTime, m_D3D->GetDeviceContext());
 	
@@ -684,6 +754,18 @@ bool GraphicsClass::Render(int mouseX, int mouseY, Coord camera_position)
 	m_halley->GetModel(planet_model);
 	result = result && ModelRender(*planet_model, m_halley->GetScale(), m_halley->GetTranslate(), 
 		m_halley->GetRotate());
+	
+	m_luna->GetModel(planet_model);
+	result = result && ModelRender(*planet_model, m_luna->GetScale(), m_luna->GetTranslate(), 
+		m_luna->GetRotate());
+	
+	m_phobos->GetModel(planet_model);
+	result = result && ModelRender(*planet_model, m_phobos->GetScale(), m_phobos->GetTranslate(), 
+		m_phobos->GetRotate());
+	
+	m_deimos->GetModel(planet_model);
+	result = result && ModelRender(*planet_model, m_deimos->GetScale(), m_deimos->GetTranslate(), 
+		m_deimos->GetRotate());
 
 	// Turn on alpha blending.
 	m_D3D->TurnOnAlphaBlending();
